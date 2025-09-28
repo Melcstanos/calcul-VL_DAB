@@ -1,12 +1,14 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <link rel="icon" type="image/png" href="icône.png">
-<link rel="apple-touch-icon" href="icône.png">
-
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Calculs VL / DAB / Prix – Espace</title>
+
+<!-- Icônes -->
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+
 <style>
   :root{--bg:#0f172a;--card:#111827;--ink:#e5e7eb;--muted:#9ca3af;--accent:#22d3ee;--border:#1f2937;--input:#0b1220;--btn:#0b1220;--btnbd:#1f2937;}
   [data-theme="light"]{--bg:#f8fafc;--card:#ffffff;--ink:#0f172a;--muted:#475569;--accent:#06b6d4;--border:#e2e8f0;--input:#ffffff;--btn:#ffffff;--btnbd:#cbd5e1;}
@@ -16,7 +18,6 @@
   h1{font-size:1.4rem;margin:6px 0 8px}
   .sub{color:var(--muted);font-size:.9rem;margin-bottom:16px}
   .nav{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0 16px}
-  .nav button{padding:9px 12px;border-radius:12px;border:1px solid var(--btnbd);background:var(--btn);color:var(--ink);cursor:pointer}
   .nav .right{margin-left:auto}
   .grid{display:grid;gap:14px}
   @media(min-width:980px){.grid{grid-template-columns:1fr 1fr}}
@@ -35,17 +36,26 @@
   .btn{padding:9px 12px;border-radius:12px;border:1px solid var(--btnbd);background:var(--btn);color:var(--ink);cursor:pointer}
   footer{margin-top:18px;color:var(--muted);font-size:.8rem}
   hr{border:0;border-top:1px solid var(--border);margin:14px 0}
+
+  /* Impression : ne sortir que la carte marquée .to-print */
+  @media print{
+    body{ background:#ffffff !important; color:#000 !important; }
+    .nav, .home-grid, footer, .toolbar{ display:none !important; }
+    .card{ box-shadow:none !important; border:0 !important; }
+    .card:not(.to-print){ display:none !important; }
+  }
 </style>
-<!-- Librairies pour export PDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNa5lQ6m1Gd4cNnqv8m1m7xTtGqH4KQWqgQkq9gA3kVwC63Fj1o8bqC8RrQwS8i7D7i0nJx1u8s6rY1zG8a5Yw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-YkM1Jof2z9gV7G9+0q7yJQx5z8U0pK0qg7H7wKf6Yp4w9k0Qp1w7y3d8A2rN3e9b7+e2JhyM2TQ2pH5YQ2B5wQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<!-- Librairies PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
 <div class="wrap">
   <div class="nav">
     <h1 style="margin:0">Espace calculs – VL / DAB / Prix</h1>
     <span class="sub">Choisis un module ou reste sur l'accueil</span>
-    <button id="toggleTheme" class="right">🌓 Thème</button>
+    <button id="toggleTheme" class="btn right">🌓 Thème</button>
   </div>
 
   <!-- Accueil -->
@@ -71,8 +81,8 @@
     <div class="card" id="vlCard">
       <h2>Valeur locative (formule mixte)</h2>
       <div class="row">
-        <div><label>Loyer constaté (€/an)</label><input type="number" id="loyerConst" value="18000"></div>
-        <div><label>Prix de cession (€)</label><input type="number" id="prixCession" value="300000"></div>
+        <div><label>Loyer constaté (€/an)</label><input type="number" id="loyerConst" value="18000" step="0.01"></div>
+        <div><label>Prix de cession (€)</label><input type="number" id="prixCession" value="300000" step="0.01"></div>
       </div>
       <div class="row">
         <div><label>Taux de rendement espéré (%)</label><input type="number" id="tauxRdt" value="6" step="0.01"></div>
@@ -80,7 +90,11 @@
       </div>
       <hr>
       <div class="out" id="outVL"></div>
-      <div class="toolbar"><button class="btn" onclick="exportPDF('vlCard','vl_calcul.pdf')">📄 Exporter en PDF</button><button class="btn" onclick="show('home')">⬅️ Accueil</button></div>
+      <div class="toolbar">
+        <button class="btn" onclick="exportPDF('vlCard','vl_calcul.pdf')">📄 Exporter en PDF</button>
+        <button class="btn" onclick="printCard('vlCard')">🖨️ Imprimer en PDF</button>
+        <button class="btn" onclick="show('home')">⬅️ Accueil</button>
+      </div>
     </div>
   </section>
 
@@ -89,8 +103,8 @@
     <div class="card" id="dabCard">
       <h2>Droit au bail (économies actualisées)</h2>
       <div class="row">
-        <div><label>Valeur locative de marché (€/an)</label><input type="number" id="vlMarche" value="36000"></div>
-        <div><label>Loyer payé au bail (€/an)</label><input type="number" id="loyerBail" value="24000"></div>
+        <div><label>Valeur locative de marché (€/an)</label><input type="number" id="vlMarche" value="36000" step="0.01"></div>
+        <div><label>Loyer payé au bail (€/an)</label><input type="number" id="loyerBail" value="24000" step="0.01"></div>
       </div>
       <div class="row">
         <div><label>Taux d’actualisation (%)</label><input type="number" id="tauxActu" value="6" step="0.01"></div>
@@ -98,8 +112,12 @@
       </div>
       <hr>
       <div class="out" id="outDAB"></div>
-      <div class="hint warn" id="noteDAB"></div>
-      <div class="toolbar"><button class="btn" onclick="exportPDF('dabCard','dab_calcul.pdf')">📄 Exporter en PDF</button><button class="btn" onclick="show('home')">⬅️ Accueil</button></div>
+      <div class="hint" id="noteDAB"></div>
+      <div class="toolbar">
+        <button class="btn" onclick="exportPDF('dabCard','dab_calcul.pdf')">📄 Exporter en PDF</button>
+        <button class="btn" onclick="printCard('dabCard')">🖨️ Imprimer en PDF</button>
+        <button class="btn" onclick="show('home')">⬅️ Accueil</button>
+      </div>
     </div>
   </section>
 
@@ -108,7 +126,7 @@
     <div class="card" id="prixCard">
       <h2>Prix de vente cible (à partir du loyer annuel)</h2>
       <div class="row">
-        <div><label>Loyer annuel (€/an)</label><input type="number" id="loyerAnnuelPrix" value="36000"></div>
+        <div><label>Loyer annuel (€/an)</label><input type="number" id="loyerAnnuelPrix" value="36000" step="0.01"></div>
         <div><label>Rendement espéré (%)</label><input type="number" id="rdtPrix" value="6" step="0.1"></div>
       </div>
       <div style="margin-top:10px">
@@ -118,7 +136,11 @@
       <hr>
       <div class="out" id="outPrix"></div>
       <div id="tablePrix"></div>
-      <div class="toolbar"><button class="btn" onclick="exportPDF('prixCard','prix_calcul.pdf')">📄 Exporter en PDF</button><button class="btn" onclick="show('home')">⬅️ Accueil</button></div>
+      <div class="toolbar">
+        <button class="btn" onclick="exportPDF('prixCard','prix_calcul.pdf')">📄 Exporter en PDF</button>
+        <button class="btn" onclick="printCard('prixCard')">🖨️ Imprimer en PDF</button>
+        <button class="btn" onclick="show('home')">⬅️ Accueil</button>
+      </div>
     </div>
   </section>
 
@@ -179,24 +201,55 @@ function calcPrix(){
   html += '</tbody></table>'; $('tablePrix').innerHTML = html;
 }
 
-// Export PDF (portrait A4, marge 36pt)
+// Export PDF (portrait A4) + fallbacks Chrome/iOS
 async function exportPDF(cardId, filename){
   const node = document.getElementById(cardId);
-  // fond blanc pour iOS
-  const canvas = await html2canvas(node, {scale:2, background:'#ffffff', useCORS:true});
+  // assure fond blanc / calc bien visible
+  node.style.background = '#ffffff';
+  // capture
+  const canvas = await html2canvas(node, {scale:2, background:'#ffffff', useCORS:true, scrollY: -window.scrollY});
   const imgData = canvas.toDataURL('image/jpeg', 0.95);
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({orientation:'p', unit:'pt', format:'a4'});
   const pageW = doc.internal.pageSize.getWidth(), pageH = doc.internal.pageSize.getHeight();
-  const margin = 36;
-  const availW = pageW - margin*2, availH = pageH - margin*2;
-  // ajuster l'image dans la page
+  const margin = 36, availW = pageW - margin*2, availH = pageH - margin*2;
   const imgW = canvas.width, imgH = canvas.height;
   const ratio = Math.min(availW/imgW, availH/imgH);
   const drawW = imgW*ratio, drawH = imgH*ratio;
   const x = margin + (availW - drawW)/2, y = margin + (availH - drawH)/2;
+
+  // En-tête
+  try{
+    const titre = node.querySelector('h2')?.innerText || 'Calcul';
+    doc.setFont('helvetica','normal'); doc.setFontSize(10);
+    doc.text(`${titre} — ${new Date().toLocaleString('fr-FR')}`, margin, 24);
+  }catch(_){}
+
   doc.addImage(imgData, 'JPEG', x, y, drawW, drawH);
-  doc.save(filename || 'calcul.pdf');
+
+  const name = filename || 'calcul.pdf';
+  try{
+    // téléchargement direct (Chrome desktop/mobile si autorisé)
+    doc.save(name);
+  }catch(e){
+    // fallback : ouvrir un blob (iOS/Chrome si download bloqué)
+    const blob = doc.output('blob');
+    const url  = URL.createObjectURL(blob);
+    try{ window.open(url, '_blank'); } catch(e2){ location.href = url; }
+    setTimeout(()=>URL.revokeObjectURL(url), 60000);
+  }
+}
+
+// Impression PDF système (affiche uniquement la carte)
+function printCard(cardId){
+  const node = document.getElementById(cardId);
+  // marque la carte à imprimer
+  node.classList.add('to-print');
+  // déclenche l’impression
+  window.print();
+  // nettoyage après impression
+  const cleanup = ()=> node.classList.remove('to-print');
+  if ('onafterprint' in window){ window.onafterprint = cleanup; } else { setTimeout(cleanup, 1000); }
 }
 
 // init défaut
@@ -204,3 +257,4 @@ calcVL(); calcDAB(); calcPrix(); show('home');
 </script>
 </body>
 </html>
+

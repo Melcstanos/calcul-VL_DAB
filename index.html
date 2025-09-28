@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VL & Droit au bail – Calc</title>
+<style>
+  :root{--bg:#0f172a;--card:#111827;--ink:#e5e7eb;--muted:#9ca3af;--accent:#22d3ee;}
+  *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
+  background:var(--bg);color:var(--ink);}
+  .wrap{max-width:900px;margin:0 auto;padding:20px}
+  h1{font-size:1.35rem;margin:6px 0 14px}
+  .grid{display:grid;gap:14px}
+  @media(min-width:860px){.grid{grid-template-columns:1fr 1fr}}
+  .card{background:var(--card);border:1px solid #1f2937;border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+  .card h2{font-size:1.05rem;margin:0 0 10px;color:var(--accent)}
+  label{display:block;font-size:.9rem;margin:10px 0 4px;color:var(--muted)}
+  input{width:100%;padding:10px;border:1px solid #374151;border-radius:12px;background:#0b1220;color:var(--ink)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .hint{font-size:.8rem;color:var(--muted)}
+  .out{font-variant-numeric:tabular-nums}
+  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#0b1220;border:1px solid #1f2937;color:var(--muted);font-size:.8rem}
+  details{margin-top:6px}
+  .warn{color:#fb7185}
+  footer{margin-top:18px;color:var(--muted);font-size:.8rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Calculateur Valeur locative & Droit au bail</h1>
+
+  <div class="grid">
+    <!-- Bloc 1 : Valeur locative (formule mixte) -->
+    <div class="card">
+      <h2>1) Valeur locative (formule mixte de Clément)</h2>
+      <div class="row">
+        <div>
+          <label>Loyer constaté (€/an)</label>
+          <input type="number" id="loyerConst" min="0" step="0.01" value="18000">
+        </div>
+        <div>
+          <label>Prix de cession (€)</label>
+          <input type="number" id="prixCession" min="0" step="0.01" value="300000">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Taux de rendement espéré (%)</label>
+          <input type="number" id="tauxRdt" min="0" step="0.01" value="6">
+        </div>
+        <div>
+          <label>Surface de référence (m²)</label>
+          <input type="number" id="surface" min="0.01" step="0.01" value="100">
+        </div>
+      </div>
+
+      <details>
+        <summary class="pill">Option : calculer une <strong>surface pondérée</strong></summary>
+        <div class="row" style="margin-top:8px">
+          <div>
+            <label>Surface de vente (coef 1.0)</label>
+            <input type="number" id="sVente" min="0" step="0.01" value="80">
+          </div>
+          <div>
+            <label>Réserve (coef 0.5)</label>
+            <input type="number" id="sReserve" min="0" step="0.01" value="30">
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Annexes / cave (coef 0.2)</label>
+            <input type="number" id="sAnnexe" min="0" step="0.01" value="10">
+          </div>
+          <div>
+            <label>Surface pondérée (m²)</label>
+            <input type="number" id="sPonderee" min="0.01" step="0.01" value="98">
+          </div>
+        </div>
+        <div class="hint">Astuce : clique dans un champ pour recalculer ; la surface pondérée remplace la “Surface de référence”.</div>
+      </details>
+
+      <hr style="border-color:#1f2937;margin:14px 0">
+      <div class="out" id="outVL"></div>
+      <div class="hint">Formule : VL/m² = (Loyer constaté + Prix × Taux) / Surface</div>
+    </div>
+
+    <!-- Bloc 2 : Droit au bail -->
+    <div class="card">
+      <h2>2) Droit au bail (économies actualisées)</h2>
+      <div class="row">
+        <div>
+          <label>Valeur locative de marché (€/an)</label>
+          <input type="number" id="vlMarche" min="0" step="0.01" value="36000">
+        </div>
+        <div>
+          <label>Loyer payé au bail (€/an)</label>
+          <input type="number" id="loyerBail" min="0" step="0.01" value="24000">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Taux d’actualisation (%)</label>
+          <input type="number" id="tauxActu" min="0.01" step="0.01" value="6">
+        </div>
+        <div>
+          <label>Durée certaine (années)</label>
+          <input type="number" id="duree" min="0.25" step="0.25" value="6">
+        </div>
+      </div>
+
+      <hr style="border-color:#1f2937;margin:14px 0">
+      <div class="out" id="outDAB"></div>
+      <div class="hint">Formule : DAB = (Éco / r) × (1 − 1/(1+r)<sup>n</sup>) avec r = taux d’actualisation</div>
+      <div class="hint warn" id="noteDAB"></div>
+    </div>
+  </div>
+
+  <footer>
+    ⚠️ Résultats indicatifs. À confronter au bail, aux clauses (cessibilité, déspécialisation), et au marché local.
+  </footer>
+</div>
+
+<script>
+function n(v){ return isFinite(v) ? v : 0; }
+function fmtEUR(x){ return (isFinite(x)? x:0).toLocaleString('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}); }
+function fmtNb(x){ return (isFinite(x)? x:0).toLocaleString('fr-FR',{maximumFractionDigits:2}); }
+
+function recalcSurfacePonderee(){
+  const sV = parseFloat(document.getElementById('sVente').value);
+  const sR = parseFloat(document.getElementById('sReserve').value);
+  const sA = parseFloat(document.getElementById('sAnnexe').value);
+  const sp = n(sV)*1 + n(sR)*0.5 + n(sA)*0.2;
+  document.getElementById('sPonderee').value = sp.toFixed(2);
+  document.getElementById('surface').value = sp.toFixed(2);
+  calcVL();
+}
+
+function calcVL(){
+  const loyerConst = parseFloat(document.getElementById('loyerConst').value);
+  const prix = parseFloat(document.getElementById('prixCession').value);
+  const tauxRdtPct = parseFloat(document.getElementById('tauxRdt').value);
+  const surf = parseFloat(document.getElementById('surface').value);
+
+  const rdt = n(tauxRdtPct)/100;
+  const vl_m2 = surf>0 ? (n(loyerConst) + n(prix)*rdt) / surf : 0;
+  const loyerAnnuel = vl_m2 * surf;
+  const loyerMensuel = loyerAnnuel/12;
+
+  document.getElementById('outVL').innerHTML =
+    `<div style="line-height:1.6">
+      <div><strong>Valeur locative ≈ ${fmtNb(vl_m2)} €/m²/an</strong></div>
+      <div>Loyer cible annuel ≈ <strong>${fmtEUR(loyerAnnuel)}</strong></div>
+      <div>Loyer cible mensuel ≈ <strong>${fmtEUR(loyerMensuel)}</strong></div>
+    </div>`;
+}
+
+function calcDAB(){
+  const vlMarche = parseFloat(document.getElementById('vlMarche').value);
+  const loyerBail = parseFloat(document.getElementById('loyerBail').value);
+  const tauxActuPct = parseFloat(document.getElementById('tauxActu').value);
+  const nAn = parseFloat(document.getElementById('duree').value);
+
+  const eco = n(vlMarche) - n(loyerBail);
+  const r = n(tauxActuPct)/100;
+  let dab = 0, msg = "";
+
+  if (r<=0 || nAn<=0){
+    msg = "Taux et durée doivent être > 0.";
+  } else {
+    const facteur = 1 - 1/Math.pow(1+r, nAn);
+    dab = (eco / r) * facteur;
+    if (eco<=0){
+      msg = "⚠️ Économie ≤ 0 : le droit au bail ressort nul ou négatif (bail pas avantageux).";
+    }
+  }
+
+  document.getElementById('outDAB').innerHTML =
+    `<div style="line-height:1.6">
+      <div>Économie annuelle : <strong>${fmtEUR(eco)}</strong></div>
+      <div><strong>Droit au bail ≈ ${fmtEUR(dab)}</strong></div>
+    </div>`;
+  document.getElementById('noteDAB').textContent = msg;
+}
+
+function wire(){
+  // VL
+  ["loyerConst","prixCession","tauxRdt","surface","sVente","sReserve","sAnnexe","sPonderee"]
+    .forEach(id=>document.getElementById(id).addEventListener('input', ()=>{
+      if (id!=="surface" && id!=="sPonderee") recalcSurfacePonderee(); // met à jour pondérée -> surface
+      if (["surface","sPonderee"].includes(id)) calcVL();
+    }));
+  // DAB
+  ["vlMarche","loyerBail","tauxActu","duree"].forEach(id=>
+    document.getElementById(id).addEventListener('input', calcDAB)
+  );
+
+  // init
+  recalcSurfacePonderee();
+  calcVL(); calcDAB();
+}
+document.addEventListener('DOMContentLoaded', wire);
+</script>
+</body>
+</html>

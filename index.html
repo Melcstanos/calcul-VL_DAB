@@ -43,8 +43,9 @@
   }
 </style>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- Librairies pour export PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
 <div class="wrap">
@@ -70,24 +71,24 @@
     <div class="card" id="vlCard">
       <h2>Valeur locative</h2>
       <div class="row">
-        <div><label>Loyer constaté (€/an)</label><input type="number" id="loyerConst" value="18000"></div>
-        <div><label>Prix de cession (€)</label><input type="number" id="prixCession" value="300000"></div>
+        <div><label>Loyer constaté (€/an)</label><input type="number" id="loyerConst" value="18000" step="0.01"></div>
+        <div><label>Prix de cession (€)</label><input type="number" id="prixCession" value="300000" step="0.01"></div>
       </div>
       <div class="row">
-        <div><label>Taux de rendement espéré (%)</label><input type="number" id="tauxRdt" value="6"></div>
+        <div><label>Taux de rendement espéré (%)</label><input type="number" id="tauxRdt" value="6" step="0.01"></div>
         <div><label><input type="checkbox" id="usePonderee" onchange="toggleSurface()"> Utiliser surface pondérée</label></div>
       </div>
       <div id="surfaceSimple">
         <label>Surface totale (m²)</label>
-        <input type="number" id="surface" value="100">
+        <input type="number" id="surface" value="100" step="0.01">
       </div>
       <div id="surfacePonderee" style="display:none">
         <div class="row">
-          <div><label>Vente (100%)</label><input type="number" id="surfVente" value="80"></div>
-          <div><label>Réserve (50%)</label><input type="number" id="surfReserve" value="20"></div>
+          <div><label>Vente (100%)</label><input type="number" id="surfVente" value="80" step="0.01"></div>
+          <div><label>Réserve (50%)</label><input type="number" id="surfReserve" value="20" step="0.01"></div>
         </div>
         <label>Annexes (33%)</label>
-        <input type="number" id="surfAnnexes" value="10">
+        <input type="number" id="surfAnnexes" value="10" step="0.01">
         <div class="hint" id="outSurfPonderee"></div>
       </div>
       <hr>
@@ -105,12 +106,12 @@
     <div class="card" id="dabCard">
       <h2>Droit au bail</h2>
       <div class="row">
-        <div><label>VL marché (€/an)</label><input type="number" id="vlMarche" value="36000"></div>
-        <div><label>Loyer bail (€/an)</label><input type="number" id="loyerBail" value="24000"></div>
+        <div><label>VL marché (€/an)</label><input type="number" id="vlMarche" value="36000" step="0.01"></div>
+        <div><label>Loyer bail (€/an)</label><input type="number" id="loyerBail" value="24000" step="0.01"></div>
       </div>
       <div class="row">
-        <div><label>Taux actualisation (%)</label><input type="number" id="tauxActu" value="6"></div>
-        <div><label>Durée (années)</label><input type="number" id="duree" value="6"></div>
+        <div><label>Taux actualisation (%)</label><input type="number" id="tauxActu" value="6" step="0.01"></div>
+        <div><label>Durée (années)</label><input type="number" id="duree" value="6" step="0.25"></div>
       </div>
       <hr>
       <div class="out" id="outDAB"></div>
@@ -128,7 +129,7 @@
     <div class="card" id="prixCard">
       <h2>Prix cible</h2>
       <div class="row">
-        <div><label>Loyer annuel (€/an)</label><input type="number" id="loyerAnnuelPrix" value="36000"></div>
+        <div><label>Loyer annuel (€/an)</label><input type="number" id="loyerAnnuelPrix" value="36000" step="0.01"></div>
         <div><label>Rendement (%)</label><input type="number" id="rdtPrix" value="6" step="0.1"></div>
       </div>
       <div style="margin-top:10px">
@@ -151,21 +152,21 @@
     <div class="card" id="cfCard">
       <h2>Cash-flow net</h2>
       <div class="row">
-        <div><label>EBE retraité (€/an)</label><input type="number" id="ebe" value="100000"></div>
-        <div><label>Loyer annuel (€/an)</label><input type="number" id="loyerCF" value="18000"></div>
+        <div><label>EBE retraité (€/an)</label><input type="number" id="ebe" value="100000" step="0.01"></div>
+        <div><label>Loyer annuel (€/an)</label><input type="number" id="loyerCF" value="18000" step="0.01"></div>
       </div>
       <div class="row">
-        <div><label>Capital emprunté (€)</label><input type="number" id="capEmprunt" value="300000"></div>
-        <div><label>Taux (%)</label><input type="number" id="tauxEmprunt" value="4"></div>
+        <div><label>Capital emprunté (€)</label><input type="number" id="capEmprunt" value="300000" step="0.01"></div>
+        <div><label>Taux (%)</label><input type="number" id="tauxEmprunt" value="4" step="0.01"></div>
       </div>
       <div class="row">
-        <div><label>Durée (ans)</label><input type="number" id="dureeEmprunt" value="7"></div>
+        <div><label>Durée (ans)</label><input type="number" id="dureeEmprunt" value="7" step="0.01"></div>
         <div><label><input type="checkbox" id="useTNS" onchange="toggleTNS()"> Inclure rémunération TNS</label></div>
       </div>
       <div id="blocTNS" style="display:none">
         <div class="row">
-          <div><label>Rémunération nette (€ / mois)</label><input type="number" id="remNet" value="2000"></div>
-          <div><label>Charges TNS (%)</label><input type="number" id="tauxTNS" value="45"></div>
+          <div><label>Rémunération nette (€ / mois)</label><input type="number" id="remNet" value="2000" step="0.01"></div>
+          <div><label>Charges TNS (%)</label><input type="number" id="tauxTNS" value="45" step="0.01"></div>
         </div>
       </div>
       <hr>
@@ -183,14 +184,16 @@
     <div class="card" id="triCard">
       <h2>TRI simplifié</h2>
       <div class="row">
-        <div><label>Investissement initial (€)</label><input type="number" id="invInit" value="300000"></div>
-        <div><label>Cash-flow net annuel (€)</label><input type="number" id="cfAn" value="40000"></div>
+        <div><label>Investissement initial (€)</label><input type="number" id="invInit" value="300000" step="0.01"></div>
+        <div><label>Cash-flow net annuel (€)</label><input type="number" id="cfAn" value="40000" step="0.01"></div>
       </div>
       <div class="row">
-        <div><label>Durée (années)</label><input type="number" id="dureeTRI" value="7"></div>
-        <div><label>Valeur revente (€)</label><input type="number" id="valRevente" value="320000"></div>
+        <div><label>Durée (années)</label><input type="number" id="dureeTRI" value="7" step="0.01"></div>
+        <div><label>Valeur revente (€)</label><input type="number" id="valRevente" value="320000" step="0.01"></div>
       </div>
-      <div><label><input type="checkbox" id="incTNS"> Inclure rémunération TNS (mêmes paramètres que module CF)</label></div>
+      <div style="margin-top:6px">
+        <label><input type="checkbox" id="incTNS"> Inclure rémunération TNS (net/mois des champs CF)</label>
+      </div>
       <hr>
       <div class="out" id="outTRI"></div>
       <div class="toolbar">
@@ -206,48 +209,224 @@
 
 <script>
 const $=id=>document.getElementById(id);
-function show(sec){['home','vl','dab','prix','cf','tri'].forEach(id=>$(id).style.display='none');$(sec).style.display='block';}
+function show(sec){['home','vl','dab','prix','cf','tri'].forEach(id=>$(id).style.display='none');$(sec).style.display='block';window.scrollTo({top:0,behavior:'smooth'});}
 
-// VL
+// Thème
+(function(){
+  const t = localStorage.getItem('theme');
+  if (t) document.documentElement.setAttribute('data-theme', t);
+  $('toggleTheme').onclick = ()=>{
+    const cur = document.documentElement.getAttribute('data-theme')==='light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', cur);
+    localStorage.setItem('theme', cur);
+  };
+})();
+
+// Utils
+function n(v){ return isFinite(v)?v:0; }
+function fmtEUR(x){ return (isFinite(x)?x:0).toLocaleString('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}); }
+function fmtNb(x){ return (isFinite(x)?x:0).toLocaleString('fr-FR',{maximumFractionDigits:2}); }
+
+// ---------- VL ----------
 function toggleSurface(){
-  if($('usePonderee').checked){$('surfaceSimple').style.display='none';$('surfacePonderee').style.display='block';}
-  else{$('surfaceSimple').style.display='block';$('surfacePonderee').style.display='none';}
+  if($('usePonderee').checked){
+    $('surfaceSimple').style.display='none';
+    $('surfacePonderee').style.display='block';
+  } else {
+    $('surfaceSimple').style.display='block';
+    $('surfacePonderee').style.display='none';
+  }
   calcVL();
 }
 function calcVL(){
   const l=+$('loyerConst').value, p=+$('prixCession').value, t=(+$('tauxRdt').value)/100;
   let surf;
   if($('usePonderee').checked){
-    surf=+$('surfVente').value+(+$('surfReserve').value*0.5)+(+$('surfAnnexes').value*0.33);
-    $('outSurfPonderee').innerText=`Surface pondérée calculée = ${surf.toFixed(2)} m²`;
-  }else{surf=+$('surface').value;$('outSurfPonderee').innerText="";}
-  const vl_m2=surf>0?(l+p*t)/surf:0;const ann=vl_m2*surf,mens=ann/12;
-  $('outVL').innerHTML=`<strong>VL ≈ ${vl_m2.toFixed(2)} €/m²/an</strong><br>Loyer annuel ≈ ${ann.toFixed(0)} €<br>Loyer mensuel ≈ ${mens.toFixed(0)} €`;
+    surf = +$('surfVente').value + (+$('surfReserve').value*0.5) + (+$('surfAnnexes').value*0.33);
+    $('outSurfPonderee').innerText = `Surface pondérée calculée = ${fmtNb(surf)} m²`;
+  } else {
+    surf = +$('surface').value;
+    $('outSurfPonderee').innerText = '';
+  }
+  const vl_m2 = surf>0 ? (n(l)+n(p)*n(t))/surf : 0;
+  const ann = vl_m2*surf, mens = ann/12;
+  $('outVL').innerHTML = `<strong>VL ≈ ${fmtNb(vl_m2)} €/m²/an</strong><br>Loyer annuel ≈ ${fmtEUR(ann)}<br>Loyer mensuel ≈ ${fmtEUR(mens)}`;
 }
-['loyerConst','prixCession','tauxRdt','surface','surfVente','surfReserve','surfAnnexes'].forEach(id=>document.addEventListener('input',e=>{if(e.target.id===id)calcVL();}));
+['loyerConst','prixCession','tauxRdt','surface','surfVente','surfReserve','surfAnnexes'].forEach(id=>{
+  document.addEventListener('input',e=>{ if(e.target.id===id) calcVL(); });
+});
 
-// DAB
+// ---------- DAB ----------
 function calcDAB(){
-  const vl=+$('vlMarche').value,lb=+$('loyerBail').value,r=(+$('tauxActu').value)/100,nAn=+$('duree').value;
-  const eco=vl-lb;let dab=0,msg='';if(r>0&&nAn>0){dab=(eco/r)*(1-1/Math.pow(1+r,nAn));if(eco<=0)msg="⚠️ Économie ≤ 0";}
-  $('outDAB').innerHTML=`Économie annuelle : ${eco.toFixed(0)} €<br><strong>DAB ≈ ${dab.toFixed(0)} €</strong>`;$('noteDAB').textContent=msg;
+  const vl=+$('vlMarche').value, lb=+$('loyerBail').value, r=(+$('tauxActu').value)/100, nAn=+$('duree').value;
+  const eco = n(vl)-n(lb);
+  let dab=0, msg='';
+  if (r>0 && nAn>0){
+    dab = (eco/r) * (1 - 1/Math.pow(1+r, nAn));
+    if (eco<=0) msg = "⚠️ Économie ≤ 0 : DAB nul ou négatif.";
+  } else msg = "Taux et durée doivent être > 0.";
+  $('outDAB').innerHTML = `Économie annuelle : ${fmtEUR(eco)}<br><strong>DAB ≈ ${fmtEUR(dab)}</strong>`;
+  $('noteDAB').textContent = msg;
 }
-['vlMarche','loyerBail','tauxActu','duree'].forEach(id=>document.addEventListener('input',e=>{if(e.target.id===id)calcDAB();}));
+['vlMarche','loyerBail','tauxActu','duree'].forEach(id=>{
+  document.addEventListener('input',e=>{ if(e.target.id===id) calcDAB(); });
+});
 
-// Prix
-function syncRdt(v){$('rdtPrix').value=v;calcPrix();}
-['loyerAnnuelPrix','rdtPrix'].forEach(id=>document.addEventListener('input',e=>{if(e.target.id==='rdtPrix')$('rdtSlider').value=e.target.value;calcPrix();}));
+// ---------- Prix ----------
+function syncRdt(v){ $('rdtPrix').value=v; calcPrix(); }
+['loyerAnnuelPrix','rdtPrix'].forEach(id=>{
+  document.addEventListener('input',e=>{ if(e.target.id===id){ if(id==='rdtPrix') $('rdtSlider').value=e.target.value; calcPrix(); }});
+});
 function calcPrix(){
-  const L=+$('loyerAnnuelPrix').value,r=(+$('rdtPrix').value)/100;const prix=r>0?L/r:0;
-  $('outPrix').innerHTML=`Rendement : ${(r*100).toFixed(1)}%<br><strong>Prix ≈ ${prix.toFixed(0)} €</strong>`;
+  const L=+$('loyerAnnuelPrix').value, r=(+$('rdtPrix').value)/100;
+  const prix = r>0 ? n(L)/r : 0;
+  $('outPrix').innerHTML = `Rendement : ${fmtNb(r*100)}%<br><strong>Prix ≈ ${fmtEUR(prix)}</strong>`;
+  // tableau sensibilité
+  let html = '<table style="width:100%;border-collapse:collapse;margin-top:10px;font-size:.9rem"><thead><tr><th style="text-align:left;border-bottom:1px solid var(--border);padding:6px">Rendement</th><th style="text-align:right;border-bottom:1px solid var(--border);padding:6px">Prix estimé</th></tr></thead><tbody>';
+  for(let rr=3; rr<=12.01; rr+=0.5){
+    const pv = n(L)/(rr/100);
+    html += `<tr><td style="padding:6px">${rr.toFixed(1)} %</td><td style="padding:6px;text-align:right">${fmtEUR(pv)}</td></tr>`;
+  }
+  html += '</tbody></table>';
+  $('tablePrix').innerHTML = html;
 }
 
-// Cash-flow
-function toggleTNS(){ $('blocTNS').style.display=$('useTNS').checked?'block':'none'; calcCF(); }
+// ---------- Cash-flow (avec option TNS) ----------
+function toggleTNS(){ $('blocTNS').style.display = $('useTNS').checked ? 'block' : 'none'; calcCF(); }
+function mensualite(C, tauxAnnuelPct, dureeAns){
+  const nmois = Math.max(1, Math.round(dureeAns*12));
+  const i = Math.max(0, tauxAnnuelPct)/100/12;
+  if (i===0) return C / nmois;
+  return (C*i) / (1 - Math.pow(1+i, -nmois));
+}
 function calcCF(){
-  const ebe=+$('ebe').value,loyer=+$('loyerCF').value,C=+$('capEmprunt').value,t=(+$('tauxEmprunt').value)/100/12,n=+$('dureeEmprunt').value*12;
-  const M=(C*t)/(1-Math.pow(1+t,-n));const annuite=M*12;
-  let cfAvant=ebe-loyer-annuite;let txt=`Mensualité ≈ ${M.toFixed(0)} €/mois (${annuite.toFixed(0)} €/
+  const ebe=+$('ebe').value, loyer=+$('loyerCF').value, C=+$('capEmprunt').value, tauxA=+$('tauxEmprunt').value, dureeA=+$('dureeEmprunt').value;
+  const M = mensualite(C, tauxA, dureeA);
+  const annuite = M*12;
+  const cfAvant = ebe - loyer - annuite;
+
+  let blocTNS = '';
+  let cfApres = cfAvant;
+
+  if ($('useTNS').checked){
+    const netMens = +$('remNet').value;
+    const tnsPct  = +$('tauxTNS').value;
+    const coutAn  = netMens*12*(1+tnsPct/100);
+    cfApres = cfAvant - coutAn;
+    blocTNS = `<div>Rémunération TNS : ${fmtEUR(netMens*12)} net/an (coût entreprise ≈ ${fmtEUR(coutAn)})</div>`;
+  }
+
+  $('outCF').innerHTML =
+    `<div>Mensualité de prêt ≈ <strong>${fmtEUR(M)}</strong> / mois (${fmtEUR(annuite)} / an)</div>
+     <div>EBE retraité : ${fmtEUR(ebe)} — Loyer : ${fmtEUR(loyer)}</div>
+     ${blocTNS}
+     <hr style="border:0;border-top:1px solid var(--border)">
+     <div><strong>CF net AVANT rémunération :</strong> ${fmtEUR(cfAvant)} / an (${fmtEUR(cfAvant/12)} / mois)</div>
+     <div><strong>CF net APRÈS rémunération :</strong> ${fmtEUR(cfApres)} / an (${fmtEUR(cfApres/12)} / mois)</div>`;
+}
+['ebe','loyerCF','capEmprunt','tauxEmprunt','dureeEmprunt','remNet','tauxTNS'].forEach(id=>{
+  document.addEventListener('input',e=>{ if(e.target.id===id) calcCF(); });
+});
+
+// ---------- TRI simplifié ----------
+function npv(rate, flows){
+  // flows[0] = investissement initial (négatif)
+  let v=0;
+  for(let t=0; t<flows.length; t++){
+    v += flows[t] / Math.pow(1+rate, t);
+  }
+  return v;
+}
+function irr(flows){
+  // Recherche d'un intervalle où NPV change de signe
+  let low=-0.99, high=1.0;
+  let fLow=npv(low,flows), fHigh=npv(high,flows);
+  let tries=0;
+  while(fLow*fHigh>0 && tries<10){ high*=2; fHigh=npv(high,flows); tries++; if(high>10)break; }
+  if (fLow*fHigh>0) return null; // pas de changement de signe → IRR introuvable simplement
+  // Bisection
+  for(let i=0;i<80;i++){
+    const mid=(low+high)/2, fMid=npv(mid,flows);
+    if (Math.abs(fMid)<1e-6) return mid;
+    if (fLow*fMid<0){ high=mid; fHigh=fMid; } else { low=mid; fLow=fMid; }
+  }
+  return (low+high)/2;
+}
+function calcTRI(){
+  const I = +$('invInit').value;
+  const cfBase = +$('cfAn').value;
+  const nY = Math.max(1, Math.round(+$('dureeTRI').value));
+  const VR = +$('valRevente').value;
+
+  // Flows hors rémunération
+  const flows1 = [-I];
+  for(let t=1;t<=nY;t++) flows1.push(cfBase + (t===nY?VR:0));
+  const r1 = irr(flows1);
+
+  // Flows avec rémunération TNS (net ajoutée comme flux positif)
+  let r2 = null, addTxt = '';
+  if ($('incTNS').checked){
+    const netMens = +$('remNet').value || 0; // on réutilise le champ du module CF
+    const add = netMens*12;
+    const flows2 = [-I];
+    for(let t=1;t<=nY;t++) flows2.push(cfBase + add + (t===nY?VR:0));
+    r2 = irr(flows2);
+    addTxt = `<div>+ Rémunération TNS incluse dans les flux : ${fmtEUR(add)} / an</div>`;
+  }
+
+  let html = `<div>Investissement initial : ${fmtEUR(I)} — CF annuel (base) : ${fmtEUR(cfBase)} — Durée : ${nY} ans — Revente : ${fmtEUR(VR)}</div>${addTxt}<hr style="border:0;border-top:1px solid var(--border)">`;
+  html += `<div><strong>TRI hors rémunération TNS :</strong> ${r1!==null ? fmtNb(r1*100)+' %' : '— (non calculable)'} </div>`;
+  if ($('incTNS').checked) html += `<div><strong>TRI avec rémunération TNS :</strong> ${r2!==null ? fmtNb(r2*100)+' %' : '— (non calculable)'} </div>`;
+  $('outTRI').innerHTML = html;
+}
+['invInit','cfAn','dureeTRI','valRevente','incTNS'].forEach(id=>{
+  document.addEventListener('input',e=>{ if(e.target.id===id) calcTRI(); });
+});
+
+// ---------- Export PDF & Impression ----------
+async function exportPDF(cardId, filename){
+  const node = document.getElementById(cardId);
+  node.style.background = '#ffffff';
+  const canvas = await html2canvas(node, {scale:2, background:'#ffffff', useCORS:true, scrollY:-window.scrollY});
+  const imgData = canvas.toDataURL('image/jpeg', 0.95);
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({orientation:'p', unit:'pt', format:'a4'});
+  const pageW = doc.internal.pageSize.getWidth(), pageH = doc.internal.pageSize.getHeight();
+  const margin = 36, availW = pageW - margin*2, availH = pageH - margin*2;
+  const imgW = canvas.width, imgH = canvas.height;
+  const ratio = Math.min(availW/imgW, availH/imgH);
+  const drawW = imgW*ratio, drawH = imgH*ratio;
+  const x = margin + (availW - drawW)/2, y = margin + (availH - drawH)/2;
+
+  try{
+    const titre = node.querySelector('h2')?.innerText || 'Calcul';
+    doc.setFont('helvetica','normal'); doc.setFontSize(10);
+    doc.text(`${titre} — ${new Date().toLocaleString('fr-FR')}`, margin, 24);
+  }catch(_){}
+
+  doc.addImage(imgData, 'JPEG', x, y, drawW, drawH);
+  const name = filename || 'calcul.pdf';
+  try{ doc.save(name); }
+  catch(e){
+    const blob = doc.output('blob'); const url = URL.createObjectURL(blob);
+    try{ window.open(url, '_blank'); } catch(e2){ location.href = url; }
+    setTimeout(()=>URL.revokeObjectURL(url), 60000);
+  }
+}
+function printCard(cardId){
+  const node = document.getElementById(cardId);
+  node.classList.add('to-print');
+  window.print();
+  const cleanup = ()=> node.classList.remove('to-print');
+  if ('onafterprint' in window) window.onafterprint = cleanup; else setTimeout(cleanup, 1000);
+}
+
+// ---------- Init ----------
+function initAll(){ calcVL(); calcDAB(); calcPrix(); calcCF(); calcTRI(); show('home'); }
+document.addEventListener('DOMContentLoaded', initAll);
+</script>
+</body>
+</html>
 
 
 

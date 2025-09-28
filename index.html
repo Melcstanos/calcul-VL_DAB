@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Calculs VL / DAB / Prix – Espace</title>
+<title>Calculs VL / DAB / Prix / CF / TRI</title>
 
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
@@ -28,7 +28,7 @@
   .hint{font-size:.8rem;color:var(--muted)}
   .out{font-variant-numeric:tabular-nums}
   .home-grid{display:grid;gap:14px;grid-template-columns:1fr}
-  @media(min-width:860px){.home-grid{grid-template-columns:1fr 1fr 1fr}}
+  @media(min-width:860px){.home-grid{grid-template-columns:1fr 1fr 1fr 1fr 1fr}}
   .home-card{cursor:pointer;text-align:center;padding:24px}
   .home-card h3{margin:0 0 8px}
   .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
@@ -49,8 +49,8 @@
 <body>
 <div class="wrap">
   <div class="nav">
-    <h1 style="margin:0">Espace calculs – VL / DAB / Prix</h1>
-    <span class="sub">Choisis un module ou reste sur l'accueil</span>
+    <h1 style="margin:0">Espace calculs</h1>
+    <span class="sub">VL / DAB / Prix / Cash-flow / TRI</span>
     <button id="toggleTheme" class="btn right">🌓 Thème</button>
   </div>
 
@@ -58,22 +58,24 @@
   <section id="home">
     <div class="home-grid">
       <div class="card home-card" onclick="show('vl')"><h3>🏷️ Valeur locative</h3><div class="hint">Surface simple ou pondérée</div></div>
-      <div class="card home-card" onclick="show('dab')"><h3>📜 Droit au bail</h3><div class="hint">Économies actualisées</div></div>
-      <div class="card home-card" onclick="show('prix')"><h3>💶 Prix à partir du loyer</h3><div class="hint">Prix = Loyer annuel / Rendement</div></div>
+      <div class="card home-card" onclick="show('dab')"><h3>📜 Droit au bail</h3></div>
+      <div class="card home-card" onclick="show('prix')"><h3>💶 Prix cible</h3></div>
+      <div class="card home-card" onclick="show('cf')"><h3>📊 Cash-flow net</h3></div>
+      <div class="card home-card" onclick="show('tri')"><h3>📈 TRI</h3></div>
     </div>
   </section>
 
-  <!-- Valeur locative -->
+  <!-- VL -->
   <section id="vl" style="display:none">
     <div class="card" id="vlCard">
-      <h2>Valeur locative (formule mixte)</h2>
+      <h2>Valeur locative</h2>
       <div class="row">
         <div><label>Loyer constaté (€/an)</label><input type="number" id="loyerConst" value="18000"></div>
         <div><label>Prix de cession (€)</label><input type="number" id="prixCession" value="300000"></div>
       </div>
       <div class="row">
         <div><label>Taux de rendement espéré (%)</label><input type="number" id="tauxRdt" value="6"></div>
-        <div><label><input type="checkbox" id="usePonderee" onchange="toggleSurface()"> Utiliser une surface pondérée</label></div>
+        <div><label><input type="checkbox" id="usePonderee" onchange="toggleSurface()"> Utiliser surface pondérée</label></div>
       </div>
       <div id="surfaceSimple">
         <label>Surface totale (m²)</label>
@@ -81,17 +83,18 @@
       </div>
       <div id="surfacePonderee" style="display:none">
         <div class="row">
-          <div><label>Surface de vente (100%)</label><input type="number" id="surfVente" value="80"></div>
+          <div><label>Vente (100%)</label><input type="number" id="surfVente" value="80"></div>
           <div><label>Réserve (50%)</label><input type="number" id="surfReserve" value="20"></div>
         </div>
         <label>Annexes (33%)</label>
         <input type="number" id="surfAnnexes" value="10">
+        <div class="hint" id="outSurfPonderee"></div>
       </div>
       <hr>
       <div class="out" id="outVL"></div>
       <div class="toolbar">
-        <button class="btn" onclick="exportPDF('vlCard','vl_calcul.pdf')">📄 Exporter en PDF</button>
-        <button class="btn" onclick="printCard('vlCard')">🖨️ Imprimer PDF</button>
+        <button class="btn" onclick="exportPDF('vlCard','vl.pdf')">📄 Export PDF</button>
+        <button class="btn" onclick="printCard('vlCard')">🖨️ Imprimer</button>
         <button class="btn" onclick="show('home')">⬅️ Accueil</button>
       </div>
     </div>
@@ -102,7 +105,7 @@
     <div class="card" id="dabCard">
       <h2>Droit au bail</h2>
       <div class="row">
-        <div><label>VL de marché (€/an)</label><input type="number" id="vlMarche" value="36000"></div>
+        <div><label>VL marché (€/an)</label><input type="number" id="vlMarche" value="36000"></div>
         <div><label>Loyer bail (€/an)</label><input type="number" id="loyerBail" value="24000"></div>
       </div>
       <div class="row">
@@ -113,8 +116,8 @@
       <div class="out" id="outDAB"></div>
       <div class="hint" id="noteDAB"></div>
       <div class="toolbar">
-        <button class="btn" onclick="exportPDF('dabCard','dab_calcul.pdf')">📄 Exporter PDF</button>
-        <button class="btn" onclick="printCard('dabCard')">🖨️ Imprimer PDF</button>
+        <button class="btn" onclick="exportPDF('dabCard','dab.pdf')">📄 Export PDF</button>
+        <button class="btn" onclick="printCard('dabCard')">🖨️ Imprimer</button>
         <button class="btn" onclick="show('home')">⬅️ Accueil</button>
       </div>
     </div>
@@ -123,7 +126,7 @@
   <!-- Prix -->
   <section id="prix" style="display:none">
     <div class="card" id="prixCard">
-      <h2>Prix de vente cible</h2>
+      <h2>Prix cible</h2>
       <div class="row">
         <div><label>Loyer annuel (€/an)</label><input type="number" id="loyerAnnuelPrix" value="36000"></div>
         <div><label>Rendement (%)</label><input type="number" id="rdtPrix" value="6" step="0.1"></div>
@@ -136,8 +139,63 @@
       <div class="out" id="outPrix"></div>
       <div id="tablePrix"></div>
       <div class="toolbar">
-        <button class="btn" onclick="exportPDF('prixCard','prix_calcul.pdf')">📄 Exporter PDF</button>
-        <button class="btn" onclick="printCard('prixCard')">🖨️ Imprimer PDF</button>
+        <button class="btn" onclick="exportPDF('prixCard','prix.pdf')">📄 Export PDF</button>
+        <button class="btn" onclick="printCard('prixCard')">🖨️ Imprimer</button>
+        <button class="btn" onclick="show('home')">⬅️ Accueil</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cash-flow -->
+  <section id="cf" style="display:none">
+    <div class="card" id="cfCard">
+      <h2>Cash-flow net</h2>
+      <div class="row">
+        <div><label>EBE retraité (€/an)</label><input type="number" id="ebe" value="100000"></div>
+        <div><label>Loyer annuel (€/an)</label><input type="number" id="loyerCF" value="18000"></div>
+      </div>
+      <div class="row">
+        <div><label>Capital emprunté (€)</label><input type="number" id="capEmprunt" value="300000"></div>
+        <div><label>Taux (%)</label><input type="number" id="tauxEmprunt" value="4"></div>
+      </div>
+      <div class="row">
+        <div><label>Durée (ans)</label><input type="number" id="dureeEmprunt" value="7"></div>
+        <div><label><input type="checkbox" id="useTNS" onchange="toggleTNS()"> Inclure rémunération TNS</label></div>
+      </div>
+      <div id="blocTNS" style="display:none">
+        <div class="row">
+          <div><label>Rémunération nette (€ / mois)</label><input type="number" id="remNet" value="2000"></div>
+          <div><label>Charges TNS (%)</label><input type="number" id="tauxTNS" value="45"></div>
+        </div>
+      </div>
+      <hr>
+      <div class="out" id="outCF"></div>
+      <div class="toolbar">
+        <button class="btn" onclick="exportPDF('cfCard','cf.pdf')">📄 Export PDF</button>
+        <button class="btn" onclick="printCard('cfCard')">🖨️ Imprimer</button>
+        <button class="btn" onclick="show('home')">⬅️ Accueil</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRI -->
+  <section id="tri" style="display:none">
+    <div class="card" id="triCard">
+      <h2>TRI simplifié</h2>
+      <div class="row">
+        <div><label>Investissement initial (€)</label><input type="number" id="invInit" value="300000"></div>
+        <div><label>Cash-flow net annuel (€)</label><input type="number" id="cfAn" value="40000"></div>
+      </div>
+      <div class="row">
+        <div><label>Durée (années)</label><input type="number" id="dureeTRI" value="7"></div>
+        <div><label>Valeur revente (€)</label><input type="number" id="valRevente" value="320000"></div>
+      </div>
+      <div><label><input type="checkbox" id="incTNS"> Inclure rémunération TNS (mêmes paramètres que module CF)</label></div>
+      <hr>
+      <div class="out" id="outTRI"></div>
+      <div class="toolbar">
+        <button class="btn" onclick="exportPDF('triCard','tri.pdf')">📄 Export PDF</button>
+        <button class="btn" onclick="printCard('triCard')">🖨️ Imprimer</button>
         <button class="btn" onclick="show('home')">⬅️ Accueil</button>
       </div>
     </div>
@@ -148,42 +206,31 @@
 
 <script>
 const $=id=>document.getElementById(id);
-function show(sec){['home','vl','dab','prix'].forEach(id=>$(id).style.display='none');$(sec).style.display='block';}
-
-// Surface pondérée
-function toggleSurface(){
-  if($('usePonderee').checked){
-    $('surfaceSimple').style.display='none';
-    $('surfacePonderee').style.display='block';
-  } else {
-    $('surfaceSimple').style.display='block';
-    $('surfacePonderee').style.display='none';
-  }
-  calcVL();
-}
+function show(sec){['home','vl','dab','prix','cf','tri'].forEach(id=>$(id).style.display='none');$(sec).style.display='block';}
 
 // VL
+function toggleSurface(){
+  if($('usePonderee').checked){$('surfaceSimple').style.display='none';$('surfacePonderee').style.display='block';}
+  else{$('surfaceSimple').style.display='block';$('surfacePonderee').style.display='none';}
+  calcVL();
+}
 function calcVL(){
   const l=+$('loyerConst').value, p=+$('prixCession').value, t=(+$('tauxRdt').value)/100;
   let surf;
   if($('usePonderee').checked){
-    surf = +$('surfVente').value + (+$('surfReserve').value*0.5) + (+$('surfAnnexes').value*0.33);
-  } else {
-    surf = +$('surface').value;
-  }
-  const vl_m2 = surf>0?(l+p*t)/surf:0;
-  const ann = vl_m2*surf, mens = ann/12;
+    surf=+$('surfVente').value+(+$('surfReserve').value*0.5)+(+$('surfAnnexes').value*0.33);
+    $('outSurfPonderee').innerText=`Surface pondérée calculée = ${surf.toFixed(2)} m²`;
+  }else{surf=+$('surface').value;$('outSurfPonderee').innerText="";}
+  const vl_m2=surf>0?(l+p*t)/surf:0;const ann=vl_m2*surf,mens=ann/12;
   $('outVL').innerHTML=`<strong>VL ≈ ${vl_m2.toFixed(2)} €/m²/an</strong><br>Loyer annuel ≈ ${ann.toFixed(0)} €<br>Loyer mensuel ≈ ${mens.toFixed(0)} €`;
 }
 ['loyerConst','prixCession','tauxRdt','surface','surfVente','surfReserve','surfAnnexes'].forEach(id=>document.addEventListener('input',e=>{if(e.target.id===id)calcVL();}));
 
 // DAB
 function calcDAB(){
-  const vl=+$('vlMarche').value, lb=+$('loyerBail').value, r=(+$('tauxActu').value)/100, nAn=+$('duree').value;
-  const eco=vl-lb;let dab=0,msg='';
-  if(r>0&&nAn>0){dab=(eco/r)*(1-1/Math.pow(1+r,nAn));if(eco<=0)msg="⚠️ Économie ≤ 0";}
-  $('outDAB').innerHTML=`Économie annuelle : ${eco.toFixed(0)} €<br><strong>DAB ≈ ${dab.toFixed(0)} €</strong>`;
-  $('noteDAB').textContent=msg;
+  const vl=+$('vlMarche').value,lb=+$('loyerBail').value,r=(+$('tauxActu').value)/100,nAn=+$('duree').value;
+  const eco=vl-lb;let dab=0,msg='';if(r>0&&nAn>0){dab=(eco/r)*(1-1/Math.pow(1+r,nAn));if(eco<=0)msg="⚠️ Économie ≤ 0";}
+  $('outDAB').innerHTML=`Économie annuelle : ${eco.toFixed(0)} €<br><strong>DAB ≈ ${dab.toFixed(0)} €</strong>`;$('noteDAB').textContent=msg;
 }
 ['vlMarche','loyerBail','tauxActu','duree'].forEach(id=>document.addEventListener('input',e=>{if(e.target.id===id)calcDAB();}));
 
@@ -192,26 +239,15 @@ function syncRdt(v){$('rdtPrix').value=v;calcPrix();}
 ['loyerAnnuelPrix','rdtPrix'].forEach(id=>document.addEventListener('input',e=>{if(e.target.id==='rdtPrix')$('rdtSlider').value=e.target.value;calcPrix();}));
 function calcPrix(){
   const L=+$('loyerAnnuelPrix').value,r=(+$('rdtPrix').value)/100;const prix=r>0?L/r:0;
-  $('outPrix').innerHTML=`Rendement : ${r*100}%<br><strong>Prix ≈ ${prix.toFixed(0)} €</strong>`;
+  $('outPrix').innerHTML=`Rendement : ${(r*100).toFixed(1)}%<br><strong>Prix ≈ ${prix.toFixed(0)} €</strong>`;
 }
 
-// Export PDF
-async function exportPDF(cardId,filename){
-  const node=$(cardId);const canvas=await html2canvas(node,{scale:2,background:'#fff'});
-  const img=canvas.toDataURL('image/jpeg',0.95);const {jsPDF}=window.jspdf;
-  const doc=new jsPDF({orientation:'p',unit:'pt',format:'a4'});
-  const pageW=doc.internal.pageSize.getWidth(),pageH=doc.internal.pageSize.getHeight();
-  const m=36,availW=pageW-m*2,availH=pageH-m*2;
-  const ratio=Math.min(availW/canvas.width,availH/canvas.height);
-  doc.addImage(img,'JPEG',m,m,canvas.width*ratio,canvas.height*ratio);
-  try{doc.save(filename);}catch(e){const blob=doc.output('blob');const url=URL.createObjectURL(blob);window.open(url,'_blank');setTimeout(()=>URL.revokeObjectURL(url),60000);}
-}
-function printCard(cardId){const node=$(cardId);node.classList.add('to-print');window.print();setTimeout(()=>node.classList.remove('to-print'),1000);}
+// Cash-flow
+function toggleTNS(){ $('blocTNS').style.display=$('useTNS').checked?'block':'none'; calcCF(); }
+function calcCF(){
+  const ebe=+$('ebe').value,loyer=+$('loyerCF').value,C=+$('capEmprunt').value,t=(+$('tauxEmprunt').value)/100/12,n=+$('dureeEmprunt').value*12;
+  const M=(C*t)/(1-Math.pow(1+t,-n));const annuite=M*12;
+  let cfAvant=ebe-loyer-annuite;let txt=`Mensualité ≈ ${M.toFixed(0)} €/mois (${annuite.toFixed(0)} €/
 
-// Init
-calcVL();calcDAB();calcPrix();show('home');
-</script>
-</body>
-</html>
 
 

@@ -1,42 +1,16 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <link rel="icon" type="image/png" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="icon" type="image/png" href="icône.png">
+<link rel="apple-touch-icon" href="icône.png">
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Calculs VL / DAB / Prix – Espace</title>
 <style>
-  :root{
-    --bg:#0f172a;--card:#111827;--ink:#e5e7eb;--muted:#9ca3af;--accent:#22d3ee;--border:#1f2937;--input:#0b1220;
-    --btn:#0b1220;--btnbd:#1f2937;
-  }
-  [data-theme="light"]{
-    --bg:#f8fafc;--card:#ffffff;--ink:#0f172a;--muted:#475569;--accent:#06b6d4;--border:#e2e8f0;--input:#ffffff;
-    --btn:#ffffff;--btnbd:#cbd5e1;
-  }
+  :root{--bg:#0f172a;--card:#111827;--ink:#e5e7eb;--muted:#9ca3af;--accent:#22d3ee;--border:#1f2937;--input:#0b1220;--btn:#0b1220;--btnbd:#1f2937;}
+  [data-theme="light"]{--bg:#f8fafc;--card:#ffffff;--ink:#0f172a;--muted:#475569;--accent:#06b6d4;--border:#e2e8f0;--input:#ffffff;--btn:#ffffff;--btnbd:#cbd5e1;}
   *{box-sizing:border-box}
-  <script>
-async function exportPDF(sectionId){
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({orientation: "portrait", unit: "pt", format: "a4"});
-  let section = document.getElementById(sectionId);
-  let text = section.innerText;
-
-  // Découpe en lignes automatiques
-  const lines = doc.splitTextToSize(text, 500);
-
-  doc.setFont("helvetica","normal");
-  doc.setFontSize(12);
-  doc.text(lines, 50, 60);
-
-  // Sauvegarde
-  doc.save(sectionId + "_calcul.pdf");
-}
-</script>
-
   body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;background:var(--bg);color:var(--ink)}
   .wrap{max-width:1080px;margin:0 auto;padding:18px}
   h1{font-size:1.4rem;margin:6px 0 8px}
@@ -49,26 +23,29 @@ async function exportPDF(sectionId){
   .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
   .card h2{font-size:1.05rem;margin:0 0 10px;color:var(--accent)}
   label{display:block;font-size:.9rem;margin:10px 0 4px;color:var(--muted)}
-  input,select{width:100%;padding:10px;border:1px solid var(--border);border-radius:12px;background:var(--input);color:var(--ink)}
+  input{width:100%;padding:10px;border:1px solid var(--border);border-radius:12px;background:var(--input);color:var(--ink)}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .hint{font-size:.8rem;color:var(--muted)}
   .out{font-variant-numeric:tabular-nums}
-  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:var(--btn);border:1px solid var(--btnbd);color:var(--muted);font-size:.8rem}
-  details{margin-top:6px}
-  .warn{color:#e11d48}
-  footer{margin-top:18px;color:var(--muted);font-size:.8rem}
-  .home-grid{display:grid;gap:14px;grid-template-columns:1fr;}
+  .home-grid{display:grid;gap:14px;grid-template-columns:1fr}
   @media(min-width:860px){.home-grid{grid-template-columns:1fr 1fr 1fr}}
   .home-card{cursor:pointer;text-align:center;padding:24px}
   .home-card h3{margin:0 0 8px}
+  .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+  .btn{padding:9px 12px;border-radius:12px;border:1px solid var(--btnbd);background:var(--btn);color:var(--ink);cursor:pointer}
+  footer{margin-top:18px;color:var(--muted);font-size:.8rem}
+  hr{border:0;border-top:1px solid var(--border);margin:14px 0}
 </style>
+<!-- Librairies pour export PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNa5lQ6m1Gd4cNnqv8m1m7xTtGqH4KQWqgQkq9gA3kVwC63Fj1o8bqC8RrQwS8i7D7i0nJx1u8s6rY1zG8a5Yw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-YkM1Jof2z9gV7G9+0q7yJQx5z8U0pK0qg7H7wKf6Yp4w9k0Qp1w7y3d8A2rN3e9b7+e2JhyM2TQ2pH5YQ2B5wQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
 <div class="wrap">
   <div class="nav">
     <h1 style="margin:0">Espace calculs – VL / DAB / Prix</h1>
     <span class="sub">Choisis un module ou reste sur l'accueil</span>
-    <button id="toggleTheme" class="right" title="Basculer clair/sombre">🌓 Thème</button>
+    <button id="toggleTheme" class="right">🌓 Thème</button>
   </div>
 
   <!-- Accueil -->
@@ -89,82 +66,50 @@ async function exportPDF(sectionId){
     </div>
   </section>
 
-  <!-- Module VL -->
+  <!-- VL -->
   <section id="vl" style="display:none">
-    <div class="card">
+    <div class="card" id="vlCard">
       <h2>Valeur locative (formule mixte)</h2>
       <div class="row">
-        <div>
-          <label>Loyer constaté (€/an)</label>
-          <input type="number" id="loyerConst" min="0" step="0.01" value="18000">
-        </div>
-        <div>
-          <label>Prix de cession (€)</label>
-          <input type="number" id="prixCession" min="0" step="0.01" value="300000">
-        </div>
+        <div><label>Loyer constaté (€/an)</label><input type="number" id="loyerConst" value="18000"></div>
+        <div><label>Prix de cession (€)</label><input type="number" id="prixCession" value="300000"></div>
       </div>
       <div class="row">
-        <div>
-          <label>Taux de rendement espéré (%)</label>
-          <input type="number" id="tauxRdt" min="0" step="0.01" value="6">
-        </div>
-        <div>
-          <label>Surface de référence (m²)</label>
-          <input type="number" id="surface" min="0.01" step="0.01" value="100">
-        </div>
+        <div><label>Taux de rendement espéré (%)</label><input type="number" id="tauxRdt" value="6" step="0.01"></div>
+        <div><label>Surface de référence (m²)</label><input type="number" id="surface" value="100" step="0.01"></div>
       </div>
       <hr>
       <div class="out" id="outVL"></div>
+      <div class="toolbar"><button class="btn" onclick="exportPDF('vlCard','vl_calcul.pdf')">📄 Exporter en PDF</button><button class="btn" onclick="show('home')">⬅️ Accueil</button></div>
     </div>
-    <button onclick="exportPDF('vl')">📄 Exporter en PDF</button>
-
   </section>
 
-  <!-- Module DAB -->
+  <!-- DAB -->
   <section id="dab" style="display:none">
-    <div class="card">
+    <div class="card" id="dabCard">
       <h2>Droit au bail (économies actualisées)</h2>
       <div class="row">
-        <div>
-          <label>Valeur locative de marché (€/an)</label>
-          <input type="number" id="vlMarche" min="0" step="0.01" value="36000">
-        </div>
-        <div>
-          <label>Loyer payé au bail (€/an)</label>
-          <input type="number" id="loyerBail" min="0" step="0.01" value="24000">
-        </div>
+        <div><label>Valeur locative de marché (€/an)</label><input type="number" id="vlMarche" value="36000"></div>
+        <div><label>Loyer payé au bail (€/an)</label><input type="number" id="loyerBail" value="24000"></div>
       </div>
       <div class="row">
-        <div>
-          <label>Taux d’actualisation (%)</label>
-          <input type="number" id="tauxActu" min="0.01" step="0.01" value="6">
-        </div>
-        <div>
-          <label>Durée certaine (années)</label>
-          <input type="number" id="duree" min="0.25" step="0.25" value="6">
-        </div>
+        <div><label>Taux d’actualisation (%)</label><input type="number" id="tauxActu" value="6" step="0.01"></div>
+        <div><label>Durée certaine (années)</label><input type="number" id="duree" value="6" step="0.25"></div>
       </div>
       <hr>
       <div class="out" id="outDAB"></div>
       <div class="hint warn" id="noteDAB"></div>
+      <div class="toolbar"><button class="btn" onclick="exportPDF('dabCard','dab_calcul.pdf')">📄 Exporter en PDF</button><button class="btn" onclick="show('home')">⬅️ Accueil</button></div>
     </div>
-    <button onclick="exportPDF('vl')">📄 Exporter en PDF</button>
-
   </section>
 
-  <!-- Module Prix -->
+  <!-- Prix -->
   <section id="prix" style="display:none">
-    <div class="card">
+    <div class="card" id="prixCard">
       <h2>Prix de vente cible (à partir du loyer annuel)</h2>
       <div class="row">
-        <div>
-          <label>Loyer annuel (€/an)</label>
-          <input type="number" id="loyerAnnuelPrix" min="0" step="0.01" value="36000">
-        </div>
-        <div>
-          <label>Rendement espéré (%)</label>
-          <input type="number" id="rdtPrix" min="0.1" step="0.1" value="6">
-        </div>
+        <div><label>Loyer annuel (€/an)</label><input type="number" id="loyerAnnuelPrix" value="36000"></div>
+        <div><label>Rendement espéré (%)</label><input type="number" id="rdtPrix" value="6" step="0.1"></div>
       </div>
       <div style="margin-top:10px">
         <label>Varier le rendement (%)</label>
@@ -173,107 +118,88 @@ async function exportPDF(sectionId){
       <hr>
       <div class="out" id="outPrix"></div>
       <div id="tablePrix"></div>
+      <div class="toolbar"><button class="btn" onclick="exportPDF('prixCard','prix_calcul.pdf')">📄 Exporter en PDF</button><button class="btn" onclick="show('home')">⬅️ Accueil</button></div>
     </div>
-    <button onclick="exportPDF('vl')">📄 Exporter en PDF</button>
-
   </section>
 
-  <footer>
-    ⚠️ Résultats indicatifs. Confronter au bail, au marché et à la réglementation.
-  </footer>
+  <footer>⚠️ Résultats indicatifs. Confronter au bail, au marché et à la réglementation.</footer>
 </div>
 
 <script>
-const $ = (id)=>document.getElementById(id);
+const $ = id => document.getElementById(id);
 
-(function initTheme(){
-  const stored = localStorage.getItem('theme');
-  if(stored){ document.documentElement.setAttribute('data-theme', stored); }
-  $('toggleTheme').addEventListener('click', ()=>{
-    const cur = document.documentElement.getAttribute('data-theme')==='light' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', cur);
-    localStorage.setItem('theme', cur);
-  });
+// thème
+(function(){
+  const t = localStorage.getItem('theme');
+  if (t) document.documentElement.setAttribute('data-theme', t);
+  $('toggleTheme').onclick = ()=>{
+    const cur = document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';
+    document.documentElement.setAttribute('data-theme',cur);
+    localStorage.setItem('theme',cur);
+  };
 })();
 
-function show(section){
-  ['home','vl','dab','prix'].forEach(id=>$(id).style.display='none');
-  $(section).style.display='block';
-  window.scrollTo({top:0,behavior:'smooth'});
-}
+// navigation
+function show(sec){ ['home','vl','dab','prix'].forEach(id=>$(id).style.display='none'); $(sec).style.display='block'; window.scrollTo({top:0,behavior:'smooth'}); }
 
-function n(v){ return isFinite(v) ? v : 0; }
-function fmtEUR(x){ return (isFinite(x)? x:0).toLocaleString('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}); }
-function fmtNb(x){ return (isFinite(x)? x:0).toLocaleString('fr-FR',{maximumFractionDigits:2}); }
+// utils
+function n(v){ return isFinite(v)?v:0; }
+function fmtEUR(x){ return (isFinite(x)?x:0).toLocaleString('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}); }
+function fmtNb(x){ return (isFinite(x)?x:0).toLocaleString('fr-FR',{maximumFractionDigits:2}); }
 
 // VL
 function calcVL(){
-  const loyerConst = parseFloat($('loyerConst').value);
-  const prix = parseFloat($('prixCession').value);
-  const tauxRdtPct = parseFloat($('tauxRdt').value);
-  const surf = parseFloat($('surface').value);
-  const rdt = n(tauxRdtPct)/100;
-  const vl_m2 = surf>0 ? (n(loyerConst) + n(prix)*rdt) / surf : 0;
-  const loyerAnnuel = vl_m2 * surf;
-  const loyerMensuel = loyerAnnuel/12;
-  $('outVL').innerHTML = `<div>
-    <div><strong>VL ≈ ${fmtNb(vl_m2)} €/m²/an</strong></div>
-    <div>Loyer cible annuel ≈ ${fmtEUR(loyerAnnuel)}</div>
-    <div>Loyer cible mensuel ≈ ${fmtEUR(loyerMensuel)}</div>
-  </div>`;
+  const l = parseFloat($('loyerConst').value), p = parseFloat($('prixCession').value), t = parseFloat($('tauxRdt').value)/100, s = parseFloat($('surface').value);
+  const vl_m2 = s>0 ? (n(l)+n(p)*n(t))/s : 0, ann = vl_m2*s, mens = ann/12;
+  $('outVL').innerHTML = `<div><div><strong>VL ≈ ${fmtNb(vl_m2)} €/m²/an</strong></div><div>Loyer cible annuel ≈ ${fmtEUR(ann)}</div><div>Loyer cible mensuel ≈ ${fmtEUR(mens)}</div></div>`;
 }
-['loyerConst','prixCession','tauxRdt','surface'].forEach(id=>document.addEventListener('input', e=>{ if(e.target.id===id) calcVL(); }));
+['loyerConst','prixCession','tauxRdt','surface'].forEach(id=>document.addEventListener('input',e=>{ if(e.target.id===id) calcVL(); }));
 
 // DAB
 function calcDAB(){
-  const vlMarche = parseFloat($('vlMarche').value);
-  const loyerBail = parseFloat($('loyerBail').value);
-  const tauxActuPct = parseFloat($('tauxActu').value);
-  const nAn = parseFloat($('duree').value);
-  const eco = n(vlMarche) - n(loyerBail);
-  const r = n(tauxActuPct)/100;
-  let dab = 0, msg = "";
-  if (r<=0 || nAn<=0){ msg = "Taux et durée doivent être > 0."; }
-  else {
-    const facteur = 1 - 1/Math.pow(1+r, nAn);
-    dab = (eco / r) * facteur;
-    if (eco<=0){ msg = "⚠️ Économie ≤ 0 : DAB nul ou négatif."; }
-  }
-  $('outDAB').innerHTML = `<div>
-    <div>Économie annuelle : ${fmtEUR(eco)}</div>
-    <div><strong>Droit au bail ≈ ${fmtEUR(dab)}</strong></div>
-  </div>`;
+  const vl = parseFloat($('vlMarche').value), lb = parseFloat($('loyerBail').value), r = parseFloat($('tauxActu').value)/100, nAn = parseFloat($('duree').value);
+  const eco = n(vl)-n(lb); let dab=0, msg='';
+  if(r<=0||nAn<=0){ msg='Taux et durée doivent être > 0.'; }
+  else{ const fac = 1 - 1/Math.pow(1+r,nAn); dab = (eco/r)*fac; if(eco<=0) msg='⚠️ Économie ≤ 0 : DAB nul ou négatif.'; }
+  $('outDAB').innerHTML = `<div><div>Économie annuelle : ${fmtEUR(eco)}</div><div><strong>Droit au bail ≈ ${fmtEUR(dab)}</strong></div></div>`;
   $('noteDAB').textContent = msg;
 }
-['vlMarche','loyerBail','tauxActu','duree'].forEach(id=>document.addEventListener('input', e=>{ if(e.target.id===id) calcDAB(); }));
+['vlMarche','loyerBail','tauxActu','duree'].forEach(id=>document.addEventListener('input',e=>{ if(e.target.id===id) calcDAB(); }));
 
 // Prix
-function syncRdt(val){ $('rdtPrix').value = val; calcPrix(); }
-['loyerAnnuelPrix','rdtPrix'].forEach(id=>document.addEventListener('input', e=>{ if(e.target.id===id){ if(id==='rdtPrix') $('rdtSlider').value=e.target.value; calcPrix(); }}));
-
+function syncRdt(v){ $('rdtPrix').value=v; calcPrix(); }
+['loyerAnnuelPrix','rdtPrix'].forEach(id=>document.addEventListener('input',e=>{ if(e.target.id===id){ if(id==='rdtPrix') $('rdtSlider').value=e.target.value; calcPrix(); }}));
 function calcPrix(){
-  const loyer = parseFloat($('loyerAnnuelPrix').value);
-  const rdtPct = parseFloat($('rdtPrix').value);
-  const r = n(rdtPct)/100;
-  const prix = r>0 ? n(loyer)/r : 0;
-  $('outPrix').innerHTML = `<div>
-    Rendement : ${fmtNb(rdtPct)} %<br>
-    <strong>Prix cible ≈ ${fmtEUR(prix)}</strong>
-  </div>`;
-  renderTablePrix();
-}
-function renderTablePrix(){
-  const loyer = parseFloat($('loyerAnnuelPrix').value);
-  let html = '<table><thead><tr><th>Rendement</th><th>Prix estimé</th></tr></thead><tbody>';
-  for(let r=3; r<=12.01; r+=0.5){
-    const prix = (n(loyer))/ (r/100);
-    html += `<tr><td>${r.toFixed(1)} %</td><td>${fmtEUR(prix)}</td></tr>`;
-  }
-  html += '</tbody></table>';
-  $('tablePrix').innerHTML = html;
+  const L = parseFloat($('loyerAnnuelPrix').value), r = parseFloat($('rdtPrix').value)/100;
+  const prix = r>0 ? n(L)/r : 0;
+  $('outPrix').innerHTML = `Rendement : ${fmtNb(parseFloat($('rdtPrix').value))}%<br><strong>Prix cible ≈ ${fmtEUR(prix)}</strong>`;
+  // tableau
+  let html = '<table style="width:100%;border-collapse:collapse;margin-top:10px;font-size:.9rem"><thead><tr><th style="text-align:left;border-bottom:1px solid var(--border);padding:6px">Rendement</th><th style="text-align:right;border-bottom:1px solid var(--border);padding:6px">Prix estimé</th></tr></thead><tbody>';
+  for(let rr=3; rr<=12.01; rr+=0.5){ const pv = n(L)/(rr/100); html += `<tr><td style="padding:6px">${rr.toFixed(1)} %</td><td style="padding:6px;text-align:right">${fmtEUR(pv)}</td></tr>`; }
+  html += '</tbody></table>'; $('tablePrix').innerHTML = html;
 }
 
-// init
+// Export PDF (portrait A4, marge 36pt)
+async function exportPDF(cardId, filename){
+  const node = document.getElementById(cardId);
+  // fond blanc pour iOS
+  const canvas = await html2canvas(node, {scale:2, background:'#ffffff', useCORS:true});
+  const imgData = canvas.toDataURL('image/jpeg', 0.95);
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({orientation:'p', unit:'pt', format:'a4'});
+  const pageW = doc.internal.pageSize.getWidth(), pageH = doc.internal.pageSize.getHeight();
+  const margin = 36;
+  const availW = pageW - margin*2, availH = pageH - margin*2;
+  // ajuster l'image dans la page
+  const imgW = canvas.width, imgH = canvas.height;
+  const ratio = Math.min(availW/imgW, availH/imgH);
+  const drawW = imgW*ratio, drawH = imgH*ratio;
+  const x = margin + (availW - drawW)/2, y = margin + (availH - drawH)/2;
+  doc.addImage(imgData, 'JPEG', x, y, drawW, drawH);
+  doc.save(filename || 'calcul.pdf');
+}
+
+// init défaut
 calcVL(); calcDAB(); calcPrix(); show('home');
 </script>
 </body>

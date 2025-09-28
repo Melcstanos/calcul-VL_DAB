@@ -3,31 +3,52 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VL & Droit au bail – Calc</title>
+<title>VL & Droit au bail – Calc+</title>
 <style>
-  :root{--bg:#0f172a;--card:#111827;--ink:#e5e7eb;--muted:#9ca3af;--accent:#22d3ee;}
-  *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
-  background:var(--bg);color:var(--ink);}
-  .wrap{max-width:900px;margin:0 auto;padding:20px}
-  h1{font-size:1.35rem;margin:6px 0 14px}
+  :root{
+    --bg:#0f172a;--card:#111827;--ink:#e5e7eb;--muted:#9ca3af;--accent:#22d3ee;--border:#1f2937;--input:#0b1220;
+    --btn:#0b1220;--btnbd:#1f2937;
+  }
+  [data-theme="light"]{
+    --bg:#f8fafc;--card:#ffffff;--ink:#0f172a;--muted:#475569;--accent:#06b6d4;--border:#e2e8f0;--input:#ffffff;
+    --btn:#ffffff;--btnbd:#cbd5e1;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:1080px;margin:0 auto;padding:18px}
+  h1{font-size:1.4rem;margin:6px 0 8px}
+  .sub{color:var(--muted);font-size:.9rem;margin-bottom:16px}
   .grid{display:grid;gap:14px}
-  @media(min-width:860px){.grid{grid-template-columns:1fr 1fr}}
-  .card{background:var(--card);border:1px solid #1f2937;border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+  @media(min-width:980px){.grid{grid-template-columns:1fr 1fr}}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
   .card h2{font-size:1.05rem;margin:0 0 10px;color:var(--accent)}
   label{display:block;font-size:.9rem;margin:10px 0 4px;color:var(--muted)}
-  input{width:100%;padding:10px;border:1px solid #374151;border-radius:12px;background:#0b1220;color:var(--ink)}
+  input{width:100%;padding:10px;border:1px solid var(--border);border-radius:12px;background:var(--input);color:var(--ink)}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .hint{font-size:.8rem;color:var(--muted)}
   .out{font-variant-numeric:tabular-nums}
-  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#0b1220;border:1px solid #1f2937;color:var(--muted);font-size:.8rem}
+  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:var(--btn);border:1px solid var(--btnbd);color:var(--muted);font-size:.8rem}
   details{margin-top:6px}
-  .warn{color:#fb7185}
+  .warn{color:#e11d48}
   footer{margin-top:18px;color:var(--muted);font-size:.8rem}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0 16px}
+  button{padding:9px 12px;border-radius:12px;border:1px solid var(--btnbd);background:var(--btn);color:var(--ink);cursor:pointer}
+  button:hover{filter:brightness(1.03)}
+  table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.9rem}
+  th,td{border:1px solid var(--border);padding:8px 10px;text-align:right}
+  th{background:rgba(0,0,0,.04);text-align:center}
+  td:first-child, th:first-child{text-align:left}
+  .badge{font-size:.75rem;color:var(--muted)}
+  .right{margin-left:auto}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>Calculateur Valeur locative & Droit au bail</h1>
+<div class="wrap" id="app">
+  <div class="toolbar">
+    <h1 style="margin:0">Calculateur Valeur locative & Droit au bail <span class="badge">v2</span></h1>
+    <span class="sub right">Sauvegarde locale, export CSV/JSON, mode clair/sombre</span>
+    <button id="toggleTheme" class="right" title="Basculer clair/sombre">🌓 Thème</button>
+  </div>
 
   <div class="grid">
     <!-- Bloc 1 : Valeur locative (formule mixte) -->
@@ -76,10 +97,10 @@
             <input type="number" id="sPonderee" min="0.01" step="0.01" value="98">
           </div>
         </div>
-        <div class="hint">Astuce : clique dans un champ pour recalculer ; la surface pondérée remplace la “Surface de référence”.</div>
+        <div class="hint">Astuce : la surface pondérée remplace la “Surface de référence”.</div>
       </details>
 
-      <hr style="border-color:#1f2937;margin:14px 0">
+      <hr style="border-color:var(--border);margin:14px 0">
       <div class="out" id="outVL"></div>
       <div class="hint">Formule : VL/m² = (Loyer constaté + Prix × Taux) / Surface</div>
     </div>
@@ -108,57 +129,86 @@
         </div>
       </div>
 
-      <hr style="border-color:#1f2937;margin:14px 0">
+      <hr style="border-color:var(--border);margin:14px 0">
       <div class="out" id="outDAB"></div>
-      <div class="hint">Formule : DAB = (Éco / r) × (1 − 1/(1+r)<sup>n</sup>) avec r = taux d’actualisation</div>
+      <div class="hint">Formule : DAB = (Éco / r) × (1 − 1/(1+r)<sup>n</sup>)</div>
       <div class="hint warn" id="noteDAB"></div>
     </div>
   </div>
 
+  <!-- Historique -->
+  <div class="card" style="margin-top:14px">
+    <h2>📜 Historique des calculs</h2>
+    <div class="toolbar">
+      <button id="saveBtn">💾 Enregistrer ce calcul</button>
+      <button id="clearBtn">🧹 Vider l’historique</button>
+      <button id="exportCsvBtn">⬇️ Export CSV</button>
+      <button id="exportJsonBtn">⬇️ Export JSON</button>
+      <span class="hint">Sauvegarde locale (localStorage, uniquement sur cet appareil/navigateur).</span>
+    </div>
+    <div id="historyWrap"></div>
+  </div>
+
   <footer>
-    ⚠️ Résultats indicatifs. À confronter au bail, aux clauses (cessibilité, déspécialisation), et au marché local.
+    ⚠️ Résultats indicatifs. À confronter au bail (cessibilité, déspécialisation, clauses), à la valeur locative de marché locale et à la réglementation.
   </footer>
 </div>
 
 <script>
+const $ = (id)=>document.getElementById(id);
 function n(v){ return isFinite(v) ? v : 0; }
 function fmtEUR(x){ return (isFinite(x)? x:0).toLocaleString('fr-FR',{style:'currency',currency:'EUR',maximumFractionDigits:0}); }
 function fmtNb(x){ return (isFinite(x)? x:0).toLocaleString('fr-FR',{maximumFractionDigits:2}); }
+function nowISO(){ return new Date().toISOString(); }
+function humanDate(iso){ const d=new Date(iso); return d.toLocaleString('fr-FR'); }
+
+// THEME
+(function initTheme(){
+  const stored = localStorage.getItem('theme');
+  if(stored){ document.documentElement.setAttribute('data-theme', stored); }
+  $('toggleTheme').addEventListener('click', ()=>{
+    const cur = document.documentElement.getAttribute('data-theme')==='light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', cur);
+    localStorage.setItem('theme', cur);
+  });
+})();
 
 function recalcSurfacePonderee(){
-  const sV = parseFloat(document.getElementById('sVente').value);
-  const sR = parseFloat(document.getElementById('sReserve').value);
-  const sA = parseFloat(document.getElementById('sAnnexe').value);
+  const sV = parseFloat($('sVente').value);
+  const sR = parseFloat($('sReserve').value);
+  const sA = parseFloat($('sAnnexe').value);
   const sp = n(sV)*1 + n(sR)*0.5 + n(sA)*0.2;
-  document.getElementById('sPonderee').value = sp.toFixed(2);
-  document.getElementById('surface').value = sp.toFixed(2);
+  $('sPonderee').value = sp.toFixed(2);
+  $('surface').value = sp.toFixed(2);
   calcVL();
 }
 
 function calcVL(){
-  const loyerConst = parseFloat(document.getElementById('loyerConst').value);
-  const prix = parseFloat(document.getElementById('prixCession').value);
-  const tauxRdtPct = parseFloat(document.getElementById('tauxRdt').value);
-  const surf = parseFloat(document.getElementById('surface').value);
+  const loyerConst = parseFloat($('loyerConst').value);
+  const prix = parseFloat($('prixCession').value);
+  const tauxRdtPct = parseFloat($('tauxRdt').value);
+  const surf = parseFloat($('surface').value);
 
   const rdt = n(tauxRdtPct)/100;
   const vl_m2 = surf>0 ? (n(loyerConst) + n(prix)*rdt) / surf : 0;
   const loyerAnnuel = vl_m2 * surf;
   const loyerMensuel = loyerAnnuel/12;
 
-  document.getElementById('outVL').innerHTML =
+  $('outVL').innerHTML =
     `<div style="line-height:1.6">
       <div><strong>Valeur locative ≈ ${fmtNb(vl_m2)} €/m²/an</strong></div>
       <div>Loyer cible annuel ≈ <strong>${fmtEUR(loyerAnnuel)}</strong></div>
       <div>Loyer cible mensuel ≈ <strong>${fmtEUR(loyerMensuel)}</strong></div>
     </div>`;
+
+  return {vl_m2, loyerAnnuel, loyerMensuel};
 }
 
 function calcDAB(){
-  const vlMarche = parseFloat(document.getElementById('vlMarche').value);
-  const loyerBail = parseFloat(document.getElementById('loyerBail').value);
-  const tauxActuPct = parseFloat(document.getElementById('tauxActu').value);
-  const nAn = parseFloat(document.getElementById('duree').value);
+  const vlMarche = parseFloat($('vlMarche').value);
+  const loyerBail = parseFloat($('loyerBail').value);
+  const tauxActuPct = parseFloat($('tauxActu').value);
+  const nAn = parseFloat($('duree').value);
 
   const eco = n(vlMarche) - n(loyerBail);
   const r = n(tauxActuPct)/100;
@@ -174,31 +224,144 @@ function calcDAB(){
     }
   }
 
-  document.getElementById('outDAB').innerHTML =
+  $('outDAB').innerHTML =
     `<div style="line-height:1.6">
       <div>Économie annuelle : <strong>${fmtEUR(eco)}</strong></div>
       <div><strong>Droit au bail ≈ ${fmtEUR(dab)}</strong></div>
     </div>`;
-  document.getElementById('noteDAB').textContent = msg;
+  $('noteDAB').textContent = msg;
+
+  return {eco, dab};
 }
 
-function wire(){
+// WIRING
+(function wire(){
   // VL
   ["loyerConst","prixCession","tauxRdt","surface","sVente","sReserve","sAnnexe","sPonderee"]
-    .forEach(id=>document.getElementById(id).addEventListener('input', ()=>{
+    .forEach(id=>$(id).addEventListener('input', ()=>{
       if (id!=="surface" && id!=="sPonderee") recalcSurfacePonderee(); // met à jour pondérée -> surface
       if (["surface","sPonderee"].includes(id)) calcVL();
     }));
   // DAB
   ["vlMarche","loyerBail","tauxActu","duree"].forEach(id=>
-    document.getElementById(id).addEventListener('input', calcDAB)
+    $(id).addEventListener('input', calcDAB)
   );
+
+  // Buttons
+  $('saveBtn').addEventListener('click', saveCurrent);
+  $('clearBtn').addEventListener('click', clearHistory);
+  $('exportCsvBtn').addEventListener('click', exportCSV);
+  $('exportJsonBtn').addEventListener('click', exportJSON);
 
   // init
   recalcSurfacePonderee();
   calcVL(); calcDAB();
+  renderHistory();
+})();
+
+// HISTORY
+const KEY="vl_dab_history_v2";
+function readHistory(){ try{ return JSON.parse(localStorage.getItem(KEY)||"[]"); }catch(e){ return []; } }
+function writeHistory(arr){ localStorage.setItem(KEY, JSON.stringify(arr)); }
+function saveCurrent(){
+  const vl = calcVL();
+  const dab = calcDAB();
+  const row = {
+    ts: nowISO(),
+    loyerConst: +$('loyerConst').value||0,
+    prixCession: +$('prixCession').value||0,
+    tauxRdt: +$('tauxRdt').value||0,
+    surface: +$('surface').value||0,
+    vlMarche: +$('vlMarche').value||0,
+    loyerBail: +$('loyerBail').value||0,
+    tauxActu: +$('tauxActu').value||0,
+    duree: +$('duree').value||0,
+    vl_m2: vl.vl_m2,
+    loyerAnnuel: vl.loyerAnnuel,
+    loyerMensuel: vl.loyerMensuel,
+    eco: dab.eco,
+    dab: dab.dab
+  };
+  const hist = readHistory();
+  hist.unshift(row);
+  writeHistory(hist);
+  renderHistory();
 }
-document.addEventListener('DOMContentLoaded', wire);
+
+function clearHistory(){
+  if(confirm('Supprimer tout l’historique de cet appareil ?')){
+    writeHistory([]);
+    renderHistory();
+  }
+}
+
+function renderHistory(){
+  const hist = readHistory();
+  if(!hist.length){ $('historyWrap').innerHTML = '<div class="hint">Aucun calcul enregistré pour le moment.</div>'; return; }
+  let html = '<div style="overflow:auto"><table><thead><tr>' +
+    '<th>Date</th><th>VL (€/m²/an)</th><th>Loyer/an</th><th>Éco/an</th><th>DAB</th>' +
+    '<th>Loyer constaté</th><th>Prix</th><th>Rdt%</th><th>Surf m²</th><th>VL marché</th><th>Loyer bail</th><th>r%</th><th>n</th>' +
+    '<th></th></tr></thead><tbody>';
+  hist.forEach((r, i)=>{
+    html += `<tr>
+      <td>${humanDate(r.ts)}</td>
+      <td>${fmtNb(r.vl_m2)}</td>
+      <td>${fmtEUR(r.loyerAnnuel)}</td>
+      <td>${fmtEUR(r.eco)}</td>
+      <td>${fmtEUR(r.dab)}</td>
+      <td>${fmtEUR(r.loyerConst)}</td>
+      <td>${fmtEUR(r.prixCession)}</td>
+      <td>${fmtNb(r.tauxRdt)}</td>
+      <td>${fmtNb(r.surface)}</td>
+      <td>${fmtEUR(r.vlMarche)}</td>
+      <td>${fmtEUR(r.loyerBail)}</td>
+      <td>${fmtNb(r.tauxActu)}</td>
+      <td>${fmtNb(r.duree)}</td>
+      <td><button onclick="loadRow(${i})">↩︎ Charger</button></td>
+    </tr>`;
+  });
+  html += '</tbody></table></div>';
+  $('historyWrap').innerHTML = html;
+}
+
+function loadRow(i){
+  const r = readHistory()[i];
+  if(!r) return;
+  $('loyerConst').value = r.loyerConst;
+  $('prixCession').value = r.prixCession;
+  $('tauxRdt').value = r.tauxRdt;
+  $('surface').value = r.surface;
+  $('vlMarche').value = r.vlMarche;
+  $('loyerBail').value = r.loyerBail;
+  $('tauxActu').value = r.tauxActu;
+  $('duree').value = r.duree;
+  calcVL(); calcDAB();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// EXPORTS
+function exportCSV(){
+  const hist = readHistory();
+  if(!hist.length){ alert('Aucun calcul enregistré.'); return; }
+  const headers = ["date","vl_m2","loyer_annuel","eco_annuel","dab","loyer_constate","prix_cession","taux_rdt","surface","vl_marche","loyer_bail","taux_actualisation","duree"];
+  const rows = hist.map(r=>[humanDate(r.ts), r.vl_m2, r.loyerAnnuel, r.eco, r.dab, r.loyerConst, r.prixCession, r.tauxRdt, r.surface, r.vlMarche, r.loyerBail, r.tauxActu, r.duree]);
+  const csv = [headers.join(";")].concat(rows.map(line=>line.join(";"))).join("\n");
+  downloadFile('historique_vl_dab.csv', new Blob([csv], {type:'text/csv;charset=utf-8;'}));
+}
+
+function exportJSON(){
+  const hist = readHistory();
+  if(!hist.length){ alert('Aucun calcul enregistré.'); return; }
+  downloadFile('historique_vl_dab.json', new Blob([JSON.stringify(hist,null,2)], {type:'application/json'}));
+}
+
+function downloadFile(filename, blob){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 500);
+}
 </script>
 </body>
 </html>

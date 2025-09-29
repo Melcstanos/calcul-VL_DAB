@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Calculs VL / DAB / Prix / CF / TRI</title>
+<title>Calculs VL / DAB / Prix / CF / TRI – v5.1</title>
 
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
@@ -26,6 +26,7 @@
   input{width:100%;padding:10px;border:1px solid var(--border);border-radius:12px;background:var(--input);color:var(--ink)}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .hint{font-size:.8rem;color:var(--muted)}
+  .warn{color:#e11d48}
   .out{font-variant-numeric:tabular-nums}
   .home-grid{display:grid;gap:14px;grid-template-columns:1fr}
   @media(min-width:860px){.home-grid{grid-template-columns:1fr 1fr 1fr 1fr 1fr}}
@@ -43,7 +44,7 @@
   }
 </style>
 
-<!-- Librairies pour export PDF -->
+<!-- Librairies export PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
@@ -61,7 +62,7 @@
       <div class="card home-card" onclick="show('vl')"><h3>🏷️ Valeur locative</h3><div class="hint">Surface simple ou pondérée</div></div>
       <div class="card home-card" onclick="show('dab')"><h3>📜 Droit au bail</h3></div>
       <div class="card home-card" onclick="show('prix')"><h3>💶 Prix cible</h3></div>
-      <div class="card home-card" onclick="show('cf')"><h3>📊 Cash-flow net</h3></div>
+      <div class="card home-card" onclick="show('cf')"><h3>📊 Cash-flow (RN/CAF/ΔBFR)</h3></div>
       <div class="card home-card" onclick="show('tri')"><h3>📈 TRI</h3></div>
     </div>
   </section>
@@ -93,6 +94,7 @@
       </div>
       <hr>
       <div class="out" id="outVL"></div>
+      <div class="hint" id="outVLsurf"></div>
       <div class="toolbar">
         <button class="btn" onclick="exportPDF('vlCard','vl.pdf')">📄 Export PDF</button>
         <button class="btn" onclick="printCard('vlCard')">🖨️ Imprimer</button>
@@ -147,37 +149,75 @@
     </div>
   </section>
 
-  <!-- Cash-flow -->
-  <section id="cf" style="display:none">
-    <div class="card" id="cfCard">
-      <h2>Cash-flow net</h2>
+ <!-- Cash-flow (RN/CAF/ΔBFR ou EBE) -->
+<section id="cf" style="display:none">
+  <div class="card" id="cfCard">
+    <h2>Cash-flow (RN/CAF/ΔBFR ou EBE)</h2>
+
+    <!-- Sélecteur de méthode -->
+    <div class="row">
+      <div><label><input type="radio" name="cfMode" id="modeRN" checked> Méthode RN/CAF/ΔBFR</label></div>
+      <div><label><input type="radio" name="cfMode" id="modeEBE"> Méthode EBE (EBE après loyers)</label></div>
+    </div>
+
+    <!-- Bloc RN/CAF/ΔBFR -->
+    <div id="blocRN">
+      <div class="hint">Convention : ΔBFR saisi <strong>positif si le BFR augmente</strong> (consomme de la trésorerie).</div>
       <div class="row">
-        <div><label>EBE retraité (€/an)</label><input type="number" id="ebe" value="100000" step="0.01"></div>
-        <div><label>Loyer annuel (€/an)</label><input type="number" id="loyerCF" value="18000" step="0.01"></div>
+        <div><label>Résultat net (€/an)</label><input type="number" id="rn" value="70000" step="0.01"></div>
+        <div><label>Dot. amort. (€/an)</label><input type="number" id="dotAm" value="20000" step="0.01"></div>
       </div>
       <div class="row">
-        <div><label>Capital emprunté (€)</label><input type="number" id="capEmprunt" value="300000" step="0.01"></div>
-        <div><label>Taux (%)</label><input type="number" id="tauxEmprunt" value="4" step="0.01"></div>
+        <div><label>Dot. provisions (€/an)</label><input type="number" id="dotProv" value="0" step="0.01"></div>
+        <div><label>Résultats exceptionnels (€/an)</label><input type="number" id="resEx" value="0" step="0.01"></div>
       </div>
       <div class="row">
-        <div><label>Durée (ans)</label><input type="number" id="dureeEmprunt" value="7" step="0.01"></div>
-        <div><label><input type="checkbox" id="useTNS" onchange="toggleTNS()"> Inclure rémunération TNS</label></div>
-      </div>
-      <div id="blocTNS" style="display:none">
-        <div class="row">
-          <div><label>Rémunération nette (€ / mois)</label><input type="number" id="remNet" value="2000" step="0.01"></div>
-          <div><label>Charges TNS (%)</label><input type="number" id="tauxTNS" value="45" step="0.01"></div>
-        </div>
-      </div>
-      <hr>
-      <div class="out" id="outCF"></div>
-      <div class="toolbar">
-        <button class="btn" onclick="exportPDF('cfCard','cf.pdf')">📄 Export PDF</button>
-        <button class="btn" onclick="printCard('cfCard')">🖨️ Imprimer</button>
-        <button class="btn" onclick="show('home')">⬅️ Accueil</button>
+        <div><label>ΔBFR (€/an)</label><input type="number" id="deltaBFR" value="0" step="0.01"></div>
+        <div></div>
       </div>
     </div>
-  </section>
+
+    <!-- Bloc EBE -->
+    <div id="blocEBE" style="display:none">
+      <div class="hint">⚠️ EBE saisi **après loyers** (ne pas re-déduire les loyers). ΔBFR positif = consommation.</div>
+      <div class="row">
+        <div><label>EBE (€/an)</label><input type="number" id="ebeInput" value="100000" step="0.01"></div>
+        <div><label>ΔBFR (€/an)</label><input type="number" id="deltaBFR_EBE" value="0" step="0.01"></div>
+      </div>
+    </div>
+
+    <!-- Rémunération TNS optionnelle (si non incluse dans RN/EBE) -->
+    <div class="row">
+      <div><label><input type="checkbox" id="useTNS" onchange="toggleTNS()"> Inclure rémunération TNS (si <u>non</u> incluse dans le RN/EBE)</label></div>
+      <div></div>
+    </div>
+    <div id="blocTNS" style="display:none">
+      <div class="row">
+        <div><label>Rémunération nette (€/mois)</label><input type="number" id="remNet" value="2000" step="0.01"></div>
+        <div><label>Charges TNS (%)</label><input type="number" id="tauxTNS" value="45" step="0.01"></div>
+      </div>
+    </div>
+
+    <hr>
+    <h3 style="margin-top:0">Dette</h3>
+    <div class="row">
+      <div><label>Capital emprunté (€)</label><input type="number" id="capEmprunt" value="300000" step="0.01"></div>
+      <div><label>Taux (%)</label><input type="number" id="tauxEmprunt" value="4" step="0.01"></div>
+    </div>
+    <div class="row">
+      <div><label>Durée (ans)</label><input type="number" id="dureeEmprunt" value="7" step="0.01"></div>
+      <div><span class="hint">L’annuité sert à obtenir le CF <em>après</em> dette.</span></div>
+    </div>
+
+    <hr>
+    <div class="out" id="outCF"></div>
+    <div class="toolbar">
+      <button class="btn" onclick="exportPDF('cfCard','cf.pdf')">📄 Export PDF</button>
+      <button class="btn" onclick="printCard('cfCard')">🖨️ Imprimer</button>
+      <button class="btn" onclick="show('home')">⬅️ Accueil</button>
+    </div>
+  </div>
+</section>
 
   <!-- TRI -->
   <section id="tri" style="display:none">
@@ -185,14 +225,14 @@
       <h2>TRI simplifié</h2>
       <div class="row">
         <div><label>Investissement initial (€)</label><input type="number" id="invInit" value="300000" step="0.01"></div>
-        <div><label>Cash-flow net annuel (€)</label><input type="number" id="cfAn" value="40000" step="0.01"></div>
+        <div><label>CF annuel (hors rémun. TNS) (€/an)</label><input type="number" id="cfAn" value="40000" step="0.01"></div>
       </div>
       <div class="row">
         <div><label>Durée (années)</label><input type="number" id="dureeTRI" value="7" step="0.01"></div>
-        <div><label>Valeur revente (€)</label><input type="number" id="valRevente" value="320000" step="0.01"></div>
+        <div><label>Valeur de revente (€)</label><input type="number" id="valRevente" value="320000" step="0.01"></div>
       </div>
       <div style="margin-top:6px">
-        <label><input type="checkbox" id="incTNS"> Inclure rémunération TNS (net/mois des champs CF)</label>
+        <label><input type="checkbox" id="incTNS"> Inclure la rémunération TNS (net/mois, prise depuis le module CF) dans les flux</label>
       </div>
       <hr>
       <div class="out" id="outTRI"></div>
@@ -204,7 +244,7 @@
     </div>
   </section>
 
-  <footer>⚠️ Résultats indicatifs.</footer>
+  <footer>⚠️ Résultats indicatifs. Vérifier la cohérence des périmètres (RN, TNS, ΔBFR) avec les états financiers.</footer>
 </div>
 
 <script>
@@ -229,28 +269,27 @@ function fmtNb(x){ return (isFinite(x)?x:0).toLocaleString('fr-FR',{maximumFract
 
 // ---------- VL ----------
 function toggleSurface(){
-  if($('usePonderee').checked){
-    $('surfaceSimple').style.display='none';
-    $('surfacePonderee').style.display='block';
-  } else {
-    $('surfaceSimple').style.display='block';
-    $('surfacePonderee').style.display='none';
-  }
+  const on = $('usePonderee').checked;
+  $('surfaceSimple').style.display = on ? 'none' : 'block';
+  $('surfacePonderee').style.display = on ? 'block' : 'none';
   calcVL();
 }
 function calcVL(){
   const l=+$('loyerConst').value, p=+$('prixCession').value, t=(+$('tauxRdt').value)/100;
-  let surf;
+  let surf, note;
   if($('usePonderee').checked){
     surf = +$('surfVente').value + (+$('surfReserve').value*0.5) + (+$('surfAnnexes').value*0.33);
-    $('outSurfPonderee').innerText = `Surface pondérée calculée = ${fmtNb(surf)} m²`;
+    $('outSurfPonderee').innerText = `Surface pondérée = ${fmtNb(surf)} m² (vente 100% + réserve 50% + annexes 33%)`;
+    note = `Surface utilisée = ${fmtNb(surf)} m² (pondérée)`;
   } else {
     surf = +$('surface').value;
     $('outSurfPonderee').innerText = '';
+    note = `Surface utilisée = ${fmtNb(surf)} m² (simple)`;
   }
   const vl_m2 = surf>0 ? (n(l)+n(p)*n(t))/surf : 0;
   const ann = vl_m2*surf, mens = ann/12;
-  $('outVL').innerHTML = `<strong>VL ≈ ${fmtNb(vl_m2)} €/m²/an</strong><br>Loyer annuel ≈ ${fmtEUR(ann)}<br>Loyer mensuel ≈ ${fmtEUR(mens)}`;
+  $('outVL').innerHTML = `<strong>VL ≈ ${fmtNb(vl_m2)} €/m²/an</strong><br>Loyer annuel ≈ ${fmtEUR(ann)} — Loyer mensuel ≈ ${fmtEUR(mens)}`;
+  $('outVLsurf').innerText = note;
 }
 ['loyerConst','prixCession','tauxRdt','surface','surfVente','surfReserve','surfAnnexes'].forEach(id=>{
   document.addEventListener('input',e=>{ if(e.target.id===id) calcVL(); });
@@ -291,7 +330,7 @@ function calcPrix(){
   $('tablePrix').innerHTML = html;
 }
 
-// ---------- Cash-flow (avec option TNS) ----------
+// ---------- Cash-flow (RN/CAF/ΔBFR) ----------
 function toggleTNS(){ $('blocTNS').style.display = $('useTNS').checked ? 'block' : 'none'; calcCF(); }
 function mensualite(C, tauxAnnuelPct, dureeAns){
   const nmois = Math.max(1, Math.round(dureeAns*12));
@@ -300,53 +339,49 @@ function mensualite(C, tauxAnnuelPct, dureeAns){
   return (C*i) / (1 - Math.pow(1+i, -nmois));
 }
 function calcCF(){
-  const ebe=+$('ebe').value, loyer=+$('loyerCF').value, C=+$('capEmprunt').value, tauxA=+$('tauxEmprunt').value, dureeA=+$('dureeEmprunt').value;
+  // CAF
+  const rn=+$('rn').value, dotA=+$('dotAm').value, dotP=+$('dotProv').value, rex=+$('resEx').value, dBFR=+$('deltaBFR').value;
+  const CAF = rn + dotA + dotP - rex;
+  // CF opérationnel (ΔBFR positif = consommation → on soustrait)
+  const CFop = CAF - dBFR;
+
+  // Dette
+  const C=+$('capEmprunt').value, tauxA=+$('tauxEmprunt').value, dureeA=+$('dureeEmprunt').value;
   const M = mensualite(C, tauxA, dureeA);
   const annuite = M*12;
-  const cfAvant = ebe - loyer - annuite;
 
+  // CF après dette (avant rémunération)
+  let cfApresDette = CFop - annuite;
+
+  // Rémunération TNS optionnelle si non incluse dans le RN
   let blocTNS = '';
-  let cfApres = cfAvant;
-
   if ($('useTNS').checked){
-    const netMens = +$('remNet').value;
-    const tnsPct  = +$('tauxTNS').value;
+    const netMens = +$('remNet').value || 0;
+    const tnsPct  = +$('tauxTNS').value || 0;
     const coutAn  = netMens*12*(1+tnsPct/100);
-    cfApres = cfAvant - coutAn;
-    blocTNS = `<div>Rémunération TNS : ${fmtEUR(netMens*12)} net/an (coût entreprise ≈ ${fmtEUR(coutAn)})</div>`;
+    cfApresDette -= coutAn;
+    blocTNS = `<div>Rémunération TNS non incluse dans le RN : ${fmtEUR(netMens*12)} net/an — Coût entreprise ≈ ${fmtEUR(coutAn)}</div>`;
   }
 
   $('outCF').innerHTML =
-    `<div>Mensualité de prêt ≈ <strong>${fmtEUR(M)}</strong> / mois (${fmtEUR(annuite)} / an)</div>
-     <div>EBE retraité : ${fmtEUR(ebe)} — Loyer : ${fmtEUR(loyer)}</div>
+    `<div>CAF = RN + Dot. amort. + Dot. prov. − Rés. except. = <strong>${fmtEUR(CAF)}</strong></div>
+     <div>CF opérationnel = CAF − ΔBFR = <strong>${fmtEUR(CFop)}</strong> (ΔBFR saisi positif si hausse du besoin)</div>
+     <div>Annuité de dette ≈ ${fmtEUR(M)} / mois (${fmtEUR(annuite)} / an)</div>
      ${blocTNS}
      <hr style="border:0;border-top:1px solid var(--border)">
-     <div><strong>CF net AVANT rémunération :</strong> ${fmtEUR(cfAvant)} / an (${fmtEUR(cfAvant/12)} / mois)</div>
-     <div><strong>CF net APRÈS rémunération :</strong> ${fmtEUR(cfApres)} / an (${fmtEUR(cfApres/12)} / mois)</div>`;
+     <div><strong>CF après dette${$('useTNS').checked?' & rémun.':''} :</strong> ${fmtEUR(cfApresDette)} / an (${fmtEUR(cfApresDette/12)} / mois)</div>`;
 }
-['ebe','loyerCF','capEmprunt','tauxEmprunt','dureeEmprunt','remNet','tauxTNS'].forEach(id=>{
+['rn','dotAm','dotProv','resEx','deltaBFR','capEmprunt','tauxEmprunt','dureeEmprunt','remNet','tauxTNS'].forEach(id=>{
   document.addEventListener('input',e=>{ if(e.target.id===id) calcCF(); });
 });
 
 // ---------- TRI simplifié ----------
-function npv(rate, flows){
-  // flows[0] = investissement initial (négatif)
-  let v=0;
-  for(let t=0; t<flows.length; t++){
-    v += flows[t] / Math.pow(1+rate, t);
-  }
-  return v;
-}
+function npv(rate, flows){ let v=0; for(let t=0;t<flows.length;t++) v += flows[t] / Math.pow(1+rate, t); return v; }
 function irr(flows){
-  // Recherche d'un intervalle où NPV change de signe
-  let low=-0.99, high=1.0;
-  let fLow=npv(low,flows), fHigh=npv(high,flows);
-  let tries=0;
+  let low=-0.99, high=1.0, fLow=npv(low,flows), fHigh=npv(high,flows), tries=0;
   while(fLow*fHigh>0 && tries<10){ high*=2; fHigh=npv(high,flows); tries++; if(high>10)break; }
-  if (fLow*fHigh>0) return null; // pas de changement de signe → IRR introuvable simplement
-  // Bisection
-  for(let i=0;i<80;i++){
-    const mid=(low+high)/2, fMid=npv(mid,flows);
+  if (fLow*fHigh>0) return null;
+  for(let i=0;i<80;i++){ const mid=(low+high)/2, fMid=npv(mid,flows);
     if (Math.abs(fMid)<1e-6) return mid;
     if (fLow*fMid<0){ high=mid; fHigh=fMid; } else { low=mid; fLow=fMid; }
   }
@@ -358,20 +393,20 @@ function calcTRI(){
   const nY = Math.max(1, Math.round(+$('dureeTRI').value));
   const VR = +$('valRevente').value;
 
-  // Flows hors rémunération
+  // Série hors rémunération
   const flows1 = [-I];
   for(let t=1;t<=nY;t++) flows1.push(cfBase + (t===nY?VR:0));
   const r1 = irr(flows1);
 
-  // Flows avec rémunération TNS (net ajoutée comme flux positif)
+  // Inclure rémunération TNS (net) comme flux positif additionnel
   let r2 = null, addTxt = '';
   if ($('incTNS').checked){
-    const netMens = +$('remNet').value || 0; // on réutilise le champ du module CF
+    const netMens = +$('remNet').value || 0;
     const add = netMens*12;
     const flows2 = [-I];
     for(let t=1;t<=nY;t++) flows2.push(cfBase + add + (t===nY?VR:0));
     r2 = irr(flows2);
-    addTxt = `<div>+ Rémunération TNS incluse dans les flux : ${fmtEUR(add)} / an</div>`;
+    addTxt = `<div>+ Rémunération TNS ajoutée aux flux : ${fmtEUR(add)} / an</div>`;
   }
 
   let html = `<div>Investissement initial : ${fmtEUR(I)} — CF annuel (base) : ${fmtEUR(cfBase)} — Durée : ${nY} ans — Revente : ${fmtEUR(VR)}</div>${addTxt}<hr style="border:0;border-top:1px solid var(--border)">`;
@@ -398,20 +433,11 @@ async function exportPDF(cardId, filename){
   const drawW = imgW*ratio, drawH = imgH*ratio;
   const x = margin + (availW - drawW)/2, y = margin + (availH - drawH)/2;
 
-  try{
-    const titre = node.querySelector('h2')?.innerText || 'Calcul';
-    doc.setFont('helvetica','normal'); doc.setFontSize(10);
-    doc.text(`${titre} — ${new Date().toLocaleString('fr-FR')}`, margin, 24);
-  }catch(_){}
-
+  try{ const titre = node.querySelector('h2')?.innerText || 'Calcul'; doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.text(`${titre} — ${new Date().toLocaleString('fr-FR')}`, margin, 24); }catch(_){}
   doc.addImage(imgData, 'JPEG', x, y, drawW, drawH);
   const name = filename || 'calcul.pdf';
   try{ doc.save(name); }
-  catch(e){
-    const blob = doc.output('blob'); const url = URL.createObjectURL(blob);
-    try{ window.open(url, '_blank'); } catch(e2){ location.href = url; }
-    setTimeout(()=>URL.revokeObjectURL(url), 60000);
-  }
+  catch(e){ const blob = doc.output('blob'); const url = URL.createObjectURL(blob); try{ window.open(url, '_blank'); } catch(e2){ location.href = url; } setTimeout(()=>URL.revokeObjectURL(url), 60000); }
 }
 function printCard(cardId){
   const node = document.getElementById(cardId);
